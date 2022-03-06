@@ -1,0 +1,42 @@
+%dw 2.0
+
+type auto_8b2b0f00_9b3c_4631_bccb_4394a537234a_Input_Payload = {
+  baggage: {
+    total: Number, 
+    "cabin?"?: Number, 
+    "checkin ?"?: Number, 
+    _?: Any
+  }, 
+  endDate: String, 
+  bedSize?: Array<Any>, 
+  origin: Array<{    locationDescription?: String,     locationCode?: String,     _?: Any  }>, 
+  rating: Number, 
+  destination: Array<{    locationDescription?: String,     locationCode?: String,     _?: Any  }>, 
+  description?: String, 
+  rules?: Array<{    rule: String,     _?: Any  }>, 
+  reschedulePolicy?: Array<{    charges: String,     timeFrame: String,     _?: Any  }>, 
+  availability: Number, 
+  noOfDays: Number, 
+  number: String, 
+  roomTypes?: Array<{    roomtype: String,     _?: Any  }>, 
+  price: Array<{    bookingtype: String,     baseFare: Number,     total: Number,     taxes: Number,     _?: Any  }>, 
+  startTime?: String, 
+  currency: String, 
+  id?: String, 
+  bookingTypes: Array<{    bookingtype: String,     _?: Any  }>, 
+  images?: Array<{    image: String,     _?: Any  }>, 
+  availableSeats?: Number, 
+  availableCoupons?: Array<{    code: String,     description: String,     rule: String,     _?: Any  }>, 
+  layOver?: Number, 
+  propertyHighlights?: String, 
+  noOfStops?: Number, 
+  stopLocation?: Array<{    arrival: String,     location: String,     id: String,     departure: String,     locationCode: String,     _?: Any  }>, 
+  name: String, 
+  endTime?: String, 
+  surgeMultiplier?: Number, 
+  noOfRooms?: Number, 
+  startDate: String, 
+  cancellationPolicy?: Array<{    charges: String,     timeFrame: String,     _?: Any  }>, 
+  _?: Any
+}
+

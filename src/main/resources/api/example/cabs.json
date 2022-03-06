@@ -1,0 +1,120 @@
+[
+  {
+    "id" : "1",
+    "name" : "Ola Car Service SUV",
+    "number":"OLA-1235",
+    "description" : "Affordable and secure Car Services",
+    "rating" : 5,
+    "bookingTypes" : 
+      [
+        {
+          "bookingtype" : "Petrol"
+        },
+        {
+          "bookingtype" : "Diesel"
+        }
+      ],
+    "startDate": "2022-02-27",
+    "endDate" : "2022-02-27",
+    "startTime" : "12:15:00",
+    "endTime" : "16:45:00",
+    "noOfDays" : 1,
+    "layOver" : 0,
+    "noOfStops" : 0,
+    "stopLocation":
+      [
+        {
+          "location" : ""
+        }
+      ],
+    "origin" :
+      [{
+        "locationCode" : "BEN",
+        "locationDescription" : "Bangalore"
+      }],
+    "destination" : 
+      [{
+        "locationCode" : "GOA",
+        "locationDescription" : "Goa"
+      }],
+    "price" : 
+      [{
+        "baseFare" : 4000,
+        "taxes" : 1000,
+        "total" : 5000,
+        "bookingtype" : "Diesel"
+      },
+      {
+        "baseFare" : 4000,
+        "taxes" : 1000,
+        "total" : 5000,
+        "bookingtype" : "Petrol"
+      }],
+    "currency" : "INR",
+    "baggage" : 
+      {
+        "total" : 3,
+        "cabin" : 0,
+        "checkin" : 0
+      }
+  },
+  {
+    "name" : "Ola Car Service DZire",
+    "id" : "1",
+     "number":"OLA-123",
+    "description" : "Affordable and secure Car Services",
+    "rating" : 5,
+    "bookingTypes" : 
+      [
+        {
+          "bookingtype" : "Petrol"
+        },
+        {
+          "bookingtype" : "Diesel"
+        }
+      ],
+    "startDate": "2022-02-27",
+    "endDate" : "2022-02-27",
+    "startTime" : "12:15:00",
+    "endTime" : "16:45:00",
+    "noOfDays" : 1,
+    "layOver" : 0,
+    "noOfStops" : 0,
+    "stopLocation":
+      [
+        {
+          "location" : ""
+        }
+      ],
+    "origin" :
+      [{
+        "locationCode" : "BEN",
+        "locationDescription" : "Bangalore"
+      }],
+    "destination" : 
+      [{
+        "locationCode" : "GOA",
+        "locationDescription" : "Goa"
+      }],
+    "price" : 
+      [{
+        "baseFare" : 4000,
+        "taxes" : 1000,
+        "total" : 5000,
+        "bookingtype" : "Diesel"
+      },
+      {
+        "baseFare" : 4000,
+        "taxes" : 1000,
+        "total" : 5000,
+        "bookingtype" : "Petrol"
+      }],
+    "currency" : "INR",
+    "baggage" : 
+      {
+        "total" : 2,
+        "cabin" : 0,
+        "checkin" : 0
+      }
+  }
+]

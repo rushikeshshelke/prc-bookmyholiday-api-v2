@@ -1,0 +1,23 @@
+%dw 2.0
+
+type auto_e7c3e984_1253_43b8_93d4_6b6f9cd34b6a_Output_Variables_varpayload = {|
+  flightNumber: Number, 
+  startDate: String, 
+  origin: Any, 
+  destination: Any, 
+  noOfPassengers: Number, 
+  nameOfPassenger: {|
+    fname: Any, 
+    lname: Any
+  |}, 
+  bookingType: String, 
+  insuranceRequired: Boolean, 
+  username: String, 
+  userid: String, 
+  isGuest: Boolean, 
+  contactDetails: Number, 
+  isReturn: Boolean | Boolean, 
+  couponName: String, 
+  couponApplied: Boolean
+|}
+

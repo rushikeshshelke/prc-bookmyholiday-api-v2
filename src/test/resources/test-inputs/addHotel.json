@@ -1,0 +1,112 @@
+{
+    "id": "7",
+    "name": "Taj Group",
+    "number": "Taj-124",
+    "description": "Lavish rooms, multiple dining spots, an outdoor swimming pool and a host of amenities await you for a delightful stay at this luxurious property.",
+    "rating": 5,
+  "bookingtypes" : 
+    [
+      {
+        "bookingtype" : "Standard Resort"
+      },
+      {
+        "bookingtype" : "Garden view Resort"
+      }
+    ],
+    "destination": [
+        {
+            "locationCode": "KOL",
+            "locationDescription": "Kolkata"
+        }
+    ],
+    "startDate": "2022-02-24",
+    "endDate": "2022-02-25",
+    "startTime": "12:00:00",
+    "endTime": "02:00:00",
+    "availableSeats": "4",
+    "price":
+        {
+            "baseFare": 10000,
+            "taxes": 1000,
+            "total": 11000
+        },
+    "currency": "INR",
+    "availableCoupons": [
+        {
+            "code": "500OFF",
+            "description": "Use this coupon to get Rupees 500 discount on purchase of 5000 and above.",
+            "rule": "price > 5000"
+        },
+        {
+            "code": "100OFF",
+            "description": "Use this coupon to get Rupees 100 discount on purchase of 1000 and above.",
+            "rule": "price > 1000"
+        }
+    ],
+    "cancellationPolicy": [
+        {
+            "timeFrame": "0-2 Hours",
+            "charges": "5000"
+        },
+        {
+            "timeFrame": "2-72 Hours",
+            "charges": "3000"
+        },
+        {
+            "timeFrame": "more than 72 Hours",
+            "charges": "500"
+        }
+    ],
+    "reschedulePolicy": [
+        {
+            "timeFrame": "0-2 Hours",
+            "charges": "5000"
+        },
+        {
+            "timeFrame": "2-72 Hours",
+            "charges": "3000"
+        },
+        {
+            "timeFrame": "more than 72 Hours",
+            "charges": "500"
+        }
+    ],
+    "baggage": {
+      "total": 22,
+      "cabin": 7,
+      "checkin": 15
+    },
+  "noOfAdults" : 2,
+  "noOfChildrens" : 0,
+  "noOfDays" : 0,
+  "noOfRooms" : 0,
+  "origin" :
+    [{
+      "locationCode" : "CCU",
+      "locationDescription" : "Kolkata"
+    }],
+  "availability" : 10,
+  "layOver" : 2,
+  "noOfStops" : 1,
+  "rules":
+    [
+      {
+        "rule" : "meals included"
+      },
+      {
+        "rule" : "covid information"
+      }
+    ],
+  "images" : 
+    [
+      {
+        "image" : "image1.jpg"
+      },
+      {
+        "image" : "image2.jpg"
+      },
+      {
+        "image" : "image3.jpg"
+      }
+    ]
+}

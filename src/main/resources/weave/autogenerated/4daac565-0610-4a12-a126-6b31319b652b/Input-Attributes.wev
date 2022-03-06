@@ -1,0 +1,23 @@
+%dw 2.0
+
+type auto_4daac565_0610_4a12_a126_6b31319b652b_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| hotels_id: String |}, 
+  version: String, 
+  localAddress: String
+|}
+

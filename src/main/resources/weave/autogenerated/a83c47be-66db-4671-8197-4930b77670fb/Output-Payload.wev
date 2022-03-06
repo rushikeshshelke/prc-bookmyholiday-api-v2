@@ -1,0 +1,30 @@
+%dw 2.0
+
+type auto_a83c47be_66db_4671_8197_4930b77670fb_Output_Payload = Array<{  stopLocations?: Array<Array<{    location: String,     _?: Any  }>>, 
+  bookingTypes: Array<{    bookingtype: String,     _?: Any  }>, 
+  baggage: {
+    total: Number, 
+    checkin?: Number, 
+    cabin?: Number, 
+    _?: Any
+  }, 
+  endDate: String, 
+  origin: Array<{    locationDescription?: String,     locationCode?: String,     _?: Any  }>, 
+  rating: Number, 
+  destination: Array<{    locationDescription?: String,     locationCode?: String,     _?: Any  }>, 
+  description?: String, 
+  layOver?: Number, 
+  noOfDays: Number, 
+  number: String, 
+  propertyHightlights?: String, 
+  noOfStops?: Number, 
+  price: Array<{    bookingtype: String,     baseFare: Number,     total: Number,     taxes: Number,     _?: Any  }>, 
+  name: String, 
+  startTime?: String, 
+  currency: String, 
+  id: String, 
+  endTime?: String, 
+  startDate: String, 
+  _?: Any
+}>
+

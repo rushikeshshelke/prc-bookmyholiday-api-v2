@@ -1,0 +1,23 @@
+%dw 2.0
+
+type auto_ea68f799_f18f_4119_812e_98dbe223fe46_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| hotels_id: String |}, 
+  version: String, 
+  localAddress: String
+|}
+

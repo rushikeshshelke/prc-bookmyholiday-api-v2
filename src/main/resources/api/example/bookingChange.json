@@ -1,0 +1,16 @@
+{
+	"departure_date": "2022-02-20",
+	"return_date": "2022-02-21",
+	"origin": "CCU",
+	"destination": "BEN",
+	"bookingtype": "FLEXI",
+	"noOfPassengers": 2,
+	"insurance": false,
+	"userName": "ABC",
+	"userid": "ABC_Account",
+	"isGuest": false,
+	"mobileNumber": 9876543210,
+  "cancel": false,
+  "reschedule": false,
+  "booking_number": "ABC1234"
+}

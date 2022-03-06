@@ -1,0 +1,80 @@
+{
+    "ID": 3,
+    "name": "Indigo",
+    "flightNumber": "6E-227",
+    "description": "This is indigo Flight from Bengaluru to Kolkata",
+    "rating": 5,
+    "startDate": "2022-02-24",
+    "endDate": "2022-02-25",
+    "startTime": "20:15:00",
+    "endTime": "00:45:00",
+    "layOver": 2,
+    "noOfStops": 1,
+    "availableSeats": 20,
+    "price": {
+        "taxes": "1000",
+        "total": "5200",
+        "baseFare": "4200"
+    },
+    "currency": "INR",
+    "baggage": {
+        "cabin": "7",
+        "total": "22",
+        "checkin": "15"
+    },
+    "availableCoupons": [
+        {
+            "code": "500OFF",
+            "description": "Use this coupon to get Rupees 500 discount on purchase of 5000 and above.",
+            "rule": "price > 5000"
+        },
+        {
+            "code": "100OFF",
+            "description": "Use this coupon to get Rupees 100 discount on purchase of 1000 and above.",
+            "rule": "price > 1000"
+        }
+    ],
+    "stopLocation": {
+        "id": "6E-227",
+        "locationCode": "Hyd",
+        "location": "Hyderabad",
+        "departure": "11:15 PM",
+        "arrival": "00:45 AM"
+    },
+    "origin": {
+        "locationCode": "BEN",
+        "locationDescription": "Bengaluru"
+    },
+    "destination": {
+        "locationCode": "CCU",
+        "locationDescription": "Kolkata"
+    },
+    "cancellationPolicy": [
+        {
+            "timeFrame": "0-2 Hours",
+            "charges": "5000"
+        },
+        {
+            "timeFrame": "2-72 Hours",
+            "charges": "3000"
+        },
+        {
+            "timeFrame": "more than 72 Hours",
+            "charges": "500"
+        }
+    ],
+    "reschedulePolicy": [
+        {
+            "timeFrame": "0-2 Hours",
+            "charges": "4000"
+        },
+        {
+            "timeFrame": "2-72 Hours",
+            "charges": "2000"
+        },
+        {
+            "timeFrame": "more than 72 Hours",
+            "charges": "200"
+        }
+    ]
+}

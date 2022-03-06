@@ -1,0 +1,22 @@
+{
+	"departure_date": "2022-02-20",
+	"return_date": "2022-02-21",
+	"origin": "CCU",
+	"destination": "BEN",
+	"bookingtype": "Sea View Resort",
+	"noOfPassengers": 2,
+	"insurance": false,
+	"userName": "ABC",
+	"firstName": "AAA",
+	"lastName" : "BBB",
+	"userid": "ABC_Account",
+	"isGuest": false,
+	"contactNumber": 9876543210,
+	"couponApplied" : true,
+	"couponName": "500OFF",
+	"roomType": "AC",
+  "bedSize": "KING",
+	"noOfDays": 2,
+	"noOfRooms" : 2,
+	"price" : 5000
+}

@@ -1,0 +1,130 @@
+{
+  "id":"1",
+  "name" : "Indigo",
+  "number" : "6E-227",
+  "description" : "This is indigo Flight from Kolkata to Bangalore",
+  "rating" : 5,
+  "bookingtypes" : 
+    [
+      {
+        "bookingtype" : "SAVER"
+      },
+      {
+        "bookingtype" : "FLEXI"
+      }
+    ],
+  "rules":
+    [
+      {
+        "rule" : "meals included"
+      },
+      {
+        "rule" : "covid information"
+      }
+    ],
+  "images" : 
+    [
+      {
+        "image" : "image1.jpg"
+      },
+      {
+        "image" : "image2.jpg"
+      },
+      {
+        "image" : "image3.jpg"
+      }
+    ],
+  "startDate": "2022-02-23",
+  "endDate" : "2022-02-23",
+  "startTime" : "12:15:00",
+  "endTime" : "16:45:00",
+  "layOver" : 2,
+  "noOfStops" : 1,
+  "stopLocation":
+    [
+      {
+        "id" : "6E-227",
+        "locationCode" : "Hyd",
+        "location" : "Hyderabad",
+      "departure" : "13:30 PM",
+      "arrival" : "14:30 PM"
+      }
+    ],
+  "origin" :
+    [{
+      "locationCode" : "CCU",
+      "locationDescription" : "Kolkata"
+    }],
+  "destination" : 
+    [{
+      "locationCode" : "BEN",
+      "locationDescription" : "Bengaluru"
+    }],
+  "availability" : 10,
+  "noOfDays" : 0,
+  "noOfRooms" : 0,
+  "noOfAdults" : 2,
+  "noOfChildrens" : 0,
+  "price" : 
+    [{
+        "baseFare" : 4000,
+        "taxes" : 1000,
+        "total" : 5000,
+        "bookingtype":"FLEXI"
+      },{
+        "baseFare" : 3000,
+        "taxes" : 1000,
+        "total" : 4000,
+        "bookingtype":"SAVER"
+      }],
+  "currency" : "INR",
+  "availableCoupons":
+    [
+      {
+        "code" : "500OFF",
+        "description" : "Use this coupon to get Rupees 500 discount on purchase of 5000 and above.",
+        "rule" : "price > 5000"
+      },
+      {
+        "code" : "100OFF",
+        "description" : "Use this coupon to get Rupees 100 discount on purchase of 1000 and above.",
+        "rule" : "price > 1000"
+      }
+    ],
+  "baggage" : 
+    {
+      "total" : 22,
+      "cabin" : 7,
+      "checkin" : 15
+    },
+  "cancellationPolicy":
+    [
+      {
+        "timeFrame" : "0-2 Hours",
+        "charges" : "5000"
+      },
+      {
+        "timeFrame" : "2-72 Hours",
+        "charges" : "3000"
+      },
+      {
+        "timeFrame" : "more than 72 Hours",
+        "charges" : "500"
+      }
+    ],
+    "reschedulePolicy":
+    [
+      {
+        "timeFrame" : "0-2 Hours",
+        "charges" : "4000"
+      },
+      {
+        "timeFrame" : "2-72 Hours",
+        "charges" : "2000"
+      },
+      {
+        "timeFrame" : "more than 72 Hours",
+        "charges" : "200"
+      }
+    ]
+}

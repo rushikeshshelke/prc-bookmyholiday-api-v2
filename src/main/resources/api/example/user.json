@@ -1,0 +1,11 @@
+{
+	"name" : "User1",
+	"surName" : "Sur Name",
+	"primaryNumber" : "9876543210",
+	"secondaryNumber" : "1234567890",
+	"email" : "user@gmail.com",
+	"addressLine1" : "",
+	"addressLine2" : "",
+	"street" : "",
+	"zipcode" : ""
+}

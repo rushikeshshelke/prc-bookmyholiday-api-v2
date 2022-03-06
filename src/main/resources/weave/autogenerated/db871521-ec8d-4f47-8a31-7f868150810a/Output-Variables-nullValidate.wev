@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_db871521_ec8d_4f47_8a31_7f868150810a_Output_Variables_nullValidate = Any
+

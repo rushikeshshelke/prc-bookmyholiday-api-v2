@@ -1,0 +1,1699 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="getFlightsFlow" doc:id="1b5b580a-8437-4c6d-8e90-d768acc1d253" >
+		<logger level="INFO" doc:name="Logger" doc:id="aab7e067-9002-43c4-a6cf-ec5879aee3cd" message='"PRC API getFlightsFlow : "'/>
+		<flow-ref doc:name="call setInitialValues" doc:id="ab83a4de-d34e-44f9-afa8-f5cd938c4b95" name="setInitialValues"/>
+		<ee:transform doc:name="Transform Message" doc:id="19e280df-dd3b-4b7c-968c-6a3c6ea2e76a">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	origin: vars.origin as String,
+	destination: vars.destination as String,
+	noOfPassengers: vars.passengerCount as Number,
+	startDate: vars.startDate as Date {format: "yyyy-MM-dd"}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="18071512-c1f4-434c-add6-1480aa5c8edb" path="/api/flights" config-ref="HTTP_Request_configuration" target="requestPayload">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"origin": vars.origin,
+	"destination": vars.destination,
+	"pcount": vars.passengerCount,
+	"sdate": vars.startDate
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="6e9b7021-f4f5-49ea-bb69-db01a3881e05" message="#[vars.requestPayload]" />
+		<choice doc:name="Choice" doc:id="6d6c79f4-8bde-4645-833c-df342d66ec5a" >
+			<when expression="#[vars.requestPayload.id[0] != null]">
+				<ee:transform doc:name="Transform Message" doc:id="005acf5d-0945-4166-b123-4724d461454a">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	ID: vars.requestPayload.id[0],
+	name: vars.requestPayload.name[0],
+	flightNumber: vars.requestPayload.flightnumber[0],
+	description: vars.requestPayload.description[0],
+	rating: vars.requestPayload.rating[0],
+	startDate: vars.requestPayload.startdate[0],
+	endDate: vars.requestPayload.enddate[0],
+	startTime: vars.requestPayload.starttime[0],
+	endTime: vars.requestPayload.endtime[0],
+	layOver: vars.requestPayload.layover[0],
+	noOfStops: vars.requestPayload.noofstops[0],
+	availableSeats: vars.requestPayload.availableseats[0],
+	price: read(vars.requestPayload.price[0].value,'application/json'),
+	currency: vars.requestPayload.currency[0],
+	baggage: read(vars.requestPayload.baggage[0].value,'application/json'),
+	availableCoupons: read(vars.requestPayload.availablecoupons[0].value,'application/json'),
+	stopLocation: read(vars.requestPayload.stoplocation[0].value,'application/json'),
+	origin: read(vars.requestPayload.origin[0].value,'application/json'),
+	destination: read(vars.requestPayload.destination[0].value,'application/json'),
+	cancellationPolicy: read(vars.requestPayload.cancellationpolicy[0].value,'application/json'),
+	reschedulePolicy: read(vars.requestPayload.reschedulepolicy[0].value,'application/json')
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="ddacaa27-d216-4fc7-b3e8-cbe12887e104" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "No flights available"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="d2867cf6-2312-46e8-a4bc-29d938b412c4" message='"End of PRC API getFlightsFlow : " #[payload]'/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="fbd57aaf-ec7d-483e-9ba9-7c833bcedc6e" type="VALIDATION:BLANK_STRING">
+				<logger level="INFO" doc:name="Logger" doc:id="8d90270a-9463-41eb-9536-5ee16bd3385d" message='"Error:"#[error.description]'/>
+				<ee:transform doc:name="Transform Message" doc:id="253f4ab3-c5a0-404d-9f79-a4f3cec60eee" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Error Message" : "Invalid user input : " ++ error.description as String
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value="400" doc:name="Set httpStatus" doc:id="950af35e-f7e5-4eed-9c6e-1bd612bfe4f7" variableName="httpStatus"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="getFlightFlow" doc:id="2ebe636f-945e-4886-bf84-c75708847b42" >
+		<logger level="INFO" doc:name="Logger" doc:id="6ac4e924-6b85-4f83-8614-e8615477529a" message='"PRC API getFlightFlow : "'/>
+		<flow-ref doc:name="call setInitialValues" doc:id="955260cb-4bc1-448d-8cd5-4907c8a33196" name="setInitialValues"/>
+		<flow-ref doc:name="call setFlightNumber" doc:id="8c11523c-be44-488d-92cf-2ef2508932dc" name="setFlightNumber"/>
+		<ee:transform doc:name="Transform Message" doc:id="79b98253-6baf-4a21-bf28-e6fc0a7cf898" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	origin: vars.origin as String,
+	destination: vars.destination as String,
+	noOfPassengers: vars.passengerCount as Number,
+	startDate: vars.startDate as Date {format: "yyyy-MM-dd"}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="63a13333-a752-492f-b637-a4e7efa95621" config-ref="HTTP_Request_configuration" path="/api/flights/{flight_id}" target="requestPayload">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"flight_id" : vars.setFlightNumber
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"origin": vars.origin,
+	"destination": vars.destination,
+	"pcount": vars.passengerCount,
+	"sdate": vars.startDate
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="87214ab0-3850-48f7-9738-e2dc453ed1d7" message="#[vars.requestPayload]"/>
+		<choice doc:name="Choice" doc:id="dcb3fa52-93ff-4214-9596-5cb09e50cc1d" >
+			<when expression="#[vars.requestPayload.id[0] != null]">
+				<ee:transform doc:name="Transform Message" doc:id="9f07d4f4-9288-4279-922c-39f7a6802412" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	ID: vars.requestPayload.id[0],
+	name: vars.requestPayload.name[0],
+	flightNumber: vars.requestPayload.flightnumber[0],
+	description: vars.requestPayload.description[0],
+	rating: vars.requestPayload.rating[0],
+	startDate: vars.requestPayload.startdate[0],
+	endDate: vars.requestPayload.enddate[0],
+	startTime: vars.requestPayload.starttime[0],
+	endTime: vars.requestPayload.endtime[0],
+	layOver: vars.requestPayload.layover[0],
+	noOfStops: vars.requestPayload.noofstops[0],
+	availableSeats: vars.requestPayload.availableseats[0],
+	price: read(vars.requestPayload.price[0].value,'application/json'),
+	currency: vars.requestPayload.currency[0],
+	baggage: read(vars.requestPayload.baggage[0].value,'application/json'),
+	availableCoupons: read(vars.requestPayload.availablecoupons[0].value,'application/json'),
+	stopLocation: read(vars.requestPayload.stoplocation[0].value,'application/json'),
+	origin: read(vars.requestPayload.origin[0].value,'application/json'),
+	destination: read(vars.requestPayload.destination[0].value,'application/json'),
+	cancellationPolicy: read(vars.requestPayload.cancellationpolicy[0].value,'application/json'),
+	reschedulePolicy: read(vars.requestPayload.reschedulepolicy[0].value,'application/json')
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="ec33ffb5-baac-49a1-8ac4-c67ef6ff2c37" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "No flight for flightID " ++ vars.setFlightNumber as String
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="95f02bd0-fc79-482c-b709-5a4d9b8defcf" message='"End of PRC API getFlightFlow : " #[payload]'/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a2e0a796-2e94-43d9-ad6d-138ca86ff69f" type="VALIDATION:BLANK_STRING">
+				<logger level="INFO" doc:name="Logger" doc:id="edee8fda-24a4-4570-816e-9322c5ce7df4" message='"Error:"#[error.description]'/>
+				<ee:transform doc:name="Transform Message" doc:id="69951ac4-4848-4720-908e-e9e2b4678127" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Error Message" : "Invalid user input : " ++ error.description as String
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value="400" doc:name="Set httpStatus" doc:id="a4c022b5-21f9-4c33-b40f-008245772034" variableName="httpStatus"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<sub-flow name="setInitialValues" doc:id="cd708323-0626-4422-aa58-f4a5e40bf38c" >
+		<flow-ref doc:name="call setLocations" doc:id="6079ac9f-40e6-4f5e-a785-8b06caf928d1" name="setLocations" />
+		<validation:is-not-blank-string doc:name="Is not blank string (source)" doc:id="2c6f244f-38b8-487b-9c55-4064abcd9fdb" value="#[vars.origin]" message="Source should not be blank." />
+		<validation:is-not-blank-string doc:name="Is not blank string (destination)" doc:id="e8ce8c63-edd1-4880-8823-9e75e2690e8e" value="#[vars.destination]" message="Destination should not be blank." />
+		<flow-ref doc:name="call setPassengerCount" doc:id="29c43073-5826-45cd-b2cb-bf30c4e1bcd8" name="setPassengerCount" />
+		<flow-ref doc:name="call setStartDate" doc:id="49c12c1c-5b78-4a41-8038-28ef83fd1a16" name="setStartDate" />
+	</sub-flow>
+	<flow name="addFlight" doc:id="0cf175ae-9c1e-4a73-b698-698fa5355dc3" >
+		<logger level="INFO" doc:name="Logger" doc:id="f7c33da6-9282-4a64-b7ae-6fe1bd9c9acf" message='"PRC API addFlight : "'/>
+		<ee:transform doc:name="Transform Message" doc:id="7a3fff38-dae7-4daa-97bd-11c435934f8f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	ID: payload.id as Number,
+	name: payload.name,
+	flightNumber: payload.number as Number,
+	description: payload.description,
+	rating: payload.rating,
+	startDate: payload.startDate,
+	endDate: payload.endDate,
+	startTime: payload.startTime,
+	endTime: payload.endTime,
+	layOver: payload.layOver,
+	noOfStops: payload.noOfStops,
+	availableSeats: payload.availability as Number,
+	price: payload.price,
+	currency: payload.currency,
+	baggage: payload.baggage as Dictionary,
+	availableCoupons: payload.availableCoupons,
+	stopLocation: payload.stopLocation,
+	origin: payload.origin,
+	destination: payload.destination,
+	cancellationPolicy: payload.cancellationPolicy,
+	reschedulePolicy: payload.reschedulePolicy
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set inputPayload" doc:id="20b39f25-3632-4ea4-b131-150ddadd9a51" variableName="inputPayload"/>
+		<logger level="INFO" doc:name="Logger" doc:id="5d667ebf-0f9f-4cd5-bffa-e9143407083b" message="#[vars.inputPayload]" />
+		<ee:transform doc:name="Transform Message" doc:id="66ade294-edf3-4508-af55-b4b6bba7aa75" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	ID: vars.inputPayload.ID as Number,
+	name: vars.inputPayload.name,
+	flightNumber: vars.inputPayload.flightNumber as Number,
+	description: vars.inputPayload.description,
+	rating: vars.inputPayload.rating,
+	startDate: vars.inputPayload.startDate,
+	endDate: vars.inputPayload.endDate,
+	startTime: vars.inputPayload.startTime,
+	endTime: vars.inputPayload.endTime,
+	layOver: vars.inputPayload.layOver,
+	noOfStops: vars.inputPayload.noOfStops,
+	availableSeats: vars.inputPayload.availableSeats as Number,
+	price: vars.inputPayload.price,
+	currency: vars.inputPayload.currency,
+	baggage: vars.inputPayload.baggage as Dictionary,
+	availableCoupons: vars.inputPayload.availableCoupons,
+	stopLocation: vars.inputPayload.stopLocation[0],
+	origin: vars.inputPayload.origin[0],
+	destination: vars.inputPayload.destination[0],
+	cancellationPolicy: vars.inputPayload.cancellationPolicy,
+	reschedulePolicy: vars.inputPayload.reschedulePolicy
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="d0cfbf45-0670-4eaf-be91-6595ace85655" config-ref="HTTP_Request_configuration" path="/api/flights" target="requestPayload">
+				</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="d7926f03-e5c0-43bc-9c7d-fb176116f802" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : vars.requestPayload.message
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="94424178-e979-4f3d-a677-ba25135ab0a4" message='"End of PRC API addFlight : " #[payload]'/>
+	</flow>
+	<flow name="bookFlight" doc:id="e7c3e984-1253-43b8-93d4-6b6f9cd34b6a" >
+		<logger level="INFO" doc:name="Logger" doc:id="29b786ab-ff92-40c8-9840-68eca36aaf4c" message='"PRC API bookFlight : "'/>
+		<ee:transform doc:name="Transform Message" doc:id="c2bf66ac-4367-4a99-a554-49b95ad8ffb8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set inputPayload" doc:id="76e4149e-474d-484d-adbc-d7f7a465548c" variableName="inputPayload"/>
+		<flow-ref doc:name="call setFlightNumber" doc:id="001edc59-2cdd-451e-a783-6a072dee3763" name="setFlightNumber"/>
+		<ee:transform doc:name="Transform Message" doc:id="c20008e3-baf2-43b3-8fd5-8f20ede10bf2">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+
+fun checkReturn(returnDate: String) = do {
+	var isreturn = 
+	if (returnDate == "")
+		false
+	else
+		true
+	---
+	isreturn
+}
+---
+{
+	flightNumber: vars.setFlightNumber as Number,
+	startDate: vars.inputPayload.departure_date as String,
+	origin: vars.inputPayload.origin,
+	destination: vars.inputPayload.destination,
+	noOfPassengers: vars.inputPayload.noOfPassengers as Number,
+	nameOfPassenger: {"fname": vars.inputPayload.firstName,"lname": vars.inputPayload.lastName},
+	bookingType: vars.inputPayload.bookingtype as String,
+	insuranceRequired: vars.inputPayload.insurance as Boolean,
+	username: vars.inputPayload.userName as String,
+	userid: vars.inputPayload.userid as String,
+	isGuest: vars.inputPayload.isGuest as Boolean,
+	contactDetails: vars.inputPayload.contactNumber as Number,
+	isReturn: checkReturn(vars.inputPayload.return_date as String),
+	couponName: vars.inputPayload.couponName as String,
+	couponApplied: vars.inputPayload.couponApplied as Boolean
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set varpayload" doc:id="79c04368-3f18-4809-9ab5-8826e40beda3" variableName="varpayload" />
+		<http:request method="POST" doc:name="Request" doc:id="94d37d0d-4a95-48d9-bf41-28e4607e70de" config-ref="HTTP_Request_configuration" path="/api/flights/{flight_id}" target="requestPayload">
+							<http:body><![CDATA[#[vars.varpayload]]]></http:body>
+							<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"flight_id" : vars.setFlightNumber
+}]]]></http:uri-params>
+						</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="846395bf-1e93-4228-9b3f-9f45603ac1bf" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+%dw 2.0
+output application/json
+---
+{
+	"Booking Response" : vars.requestPayload
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="9408b5bf-d69d-43ba-990f-e64925ceab86" message='"End of PRC API bookFlight : " #[payload]'/>
+	</flow>
+	<flow name="cancelFlight" doc:id="9ab6633f-f16e-4e27-8f72-3cb981d0bc8b" >
+		<logger level="INFO" doc:name="Logger" doc:id="dc8e1c59-fd29-4f39-b0e4-57b36473d9ee" message='"PRC API cancelFlight : "'/>
+		<ee:transform doc:name="Transform Message" doc:id="7acb7666-3153-4b30-bebd-6eeb258ab47b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+{
+	departure_date: payload.departure_date,
+	return_date: payload.return_date,
+	origin: payload.origin,
+	destination: payload.destination,
+	bookingtype: payload.bookingtype,
+	noOfPassengers: payload.noOfPassengers,
+	insurance: payload.insurance,
+	userName: payload.userName,
+	userid: payload.userid,
+	isGuest: payload.isGuest,
+	contactDetails: payload.mobileNumber,
+  	isCancel: payload.cancel,
+  	isReschedule: payload.reschedule,
+  	bookingID: payload.booking_number
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set inputPayload" doc:id="0347b43d-0843-4314-9d17-1ba1edbf1ae7" variableName="inputPayload"/>
+		<flow-ref doc:name="call setFlightNumber" doc:id="829d1bda-5276-4ae7-9b2c-6c34617a7c13" name="setFlightNumber"/>
+		<ee:transform doc:name="Transform Message" doc:id="c7c28eff-f5cd-4b63-80b3-31c33b6a36ef">
+									<ee:message>
+										<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	startDate: vars.inputPayload.departure_date,
+	origin: vars.inputPayload.origin,
+	destination: vars.inputPayload.destination,
+	userName: vars.inputPayload.userName,
+	userid: vars.inputPayload.userid,
+	isGuest: vars.inputPayload.isGuest,
+	contactDetails: vars.inputPayload.contactDetails,
+  	isCancel: vars.inputPayload.isCancel,
+  	isReschedule: vars.inputPayload.isReschedule,
+  	bookingID: vars.inputPayload.bookingID,
+  	flightNumber: vars.setFlightNumber
+}]]></ee:set-payload>
+									</ee:message>
+								</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="076029cd-9be8-4763-b58b-53022116eea3" message="#[payload]" />
+		<choice doc:name="Choice" doc:id="2cf9b6bf-1e35-4c09-ac86-109867c9c565" >
+			<when expression="#[vars.inputPayload.isCancel == true]">
+				<http:request method="PUT" doc:name="Request" doc:id="69752101-a22e-44b4-a92c-37cd24d62c2b" config-ref="HTTP_Request_configuration" path="/api/flights" target="requestPayload">
+								</http:request>
+				<ee:transform doc:name="Transform Message" doc:id="cce767c9-eca7-49b8-90e3-da9f3b85cf01" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : vars.requestPayload.message
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="701885c8-f5db-4628-ad15-d5e6fd359719">
+									<ee:message>
+										<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "Choose either cancel or reschedule."
+}]]></ee:set-payload>
+									</ee:message>
+								</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="29083e2e-c0e0-42bf-92f0-d449b84b6f22" message='"End of PRC API cancelFlight : " #[payload]'/>
+	</flow>
+	<sub-flow name="setFlightNumber" doc:id="e8a978a6-278e-4e69-af4c-3773d70f0af9" >
+		<set-variable value="#[attributes.uriParams.flight_id]" doc:name="setFlightNumber" doc:id="f2d087ef-e89e-4a35-b1f3-455a47ffb0e5" variableName="setFlightNumber"/>
+	</sub-flow>
+	<sub-flow name="setLocations" doc:id="583307f1-cea9-4efb-a8c5-3312f8420c39" >
+		<set-variable value="#[attributes.queryParams.source]" doc:name="setOrigin" doc:id="0aa318d0-7453-4ab6-abe7-28f5fadff70a" variableName="origin"/>
+		<set-variable value="#[attributes.queryParams.destination]" doc:name="setDestination" doc:id="f188da25-152d-45cc-9c45-70a92beb0f82" variableName="destination"/>
+	</sub-flow>
+	<sub-flow name="setPassengerCount" doc:id="0aff8cbf-43da-4d49-92ea-334ae716c5ec" >
+		<set-variable value="#[attributes.queryParams.noOfPassengers default 1]" doc:name="setPassengerCount" doc:id="672d7edb-8a5d-49ac-ba96-8a5bc3ea9d01" variableName="passengerCount"/>
+	</sub-flow>
+	<sub-flow name="setStartDate" doc:id="67d15541-5285-40d7-bdfa-aa9be8ad470f" >
+		<set-variable value='#[attributes.queryParams.startDate default (now() as String {format: "dd-MM-yyyy"}) as String]' doc:name="setStartDate" doc:id="8874c0b8-ae20-4a5d-ba44-1d5be7a76a09" variableName="startDate"/>
+	</sub-flow>
+	<sub-flow name="setEndDate" doc:id="25c50bf3-f978-4143-9e73-fbfb2b2db996" >
+		<set-variable value="#[attributes.queryParams.endDate]" doc:name="Set EndDate" doc:id="1607125f-ea28-4a6f-98ed-8aa7663477c6" variableName="endDate"/>
+	</sub-flow>
+	<flow name="getHotelsFlow" doc:id="55791f76-727b-4d4f-9571-0b83e6a6acca" >
+		<logger level="INFO" doc:name="Logger" doc:id="250b8ea2-4413-48e5-853d-c33d096707af" message='"PRC API getHotelsFlow : "'/>
+		<flow-ref doc:name="call setLocations" doc:id="c1e90bff-e412-4d7b-a002-7ec05481aff6" name="setLocations"/>
+		<validation:is-not-blank-string doc:name="Is not blank string (destination)" doc:id="378dbcac-a797-4b29-adb4-b606d171d7f0" value="#[vars.destination]" message="Destination should not be blank."/>
+		<flow-ref doc:name="call setStartDate" doc:id="9d5ef825-a2a7-4abd-b30e-f7cc96488b79" name="setStartDate"/>
+		<flow-ref doc:name="call setEndDate" doc:id="da406dc6-6651-4da9-8213-dd7ec484e00f" name="setEndDate"/>
+		<ee:transform doc:name="Transform Message" doc:id="1b77486b-4b37-46ac-9509-ac182026f16e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyholiday.com/hotels/
+---
+{
+	ns0#getHotels: {
+		"destination": vars.destination,
+		"startDate": vars.startDate,
+		"endDate": vars.endDate,
+		"noOfRooms": attributes.queryParams.noOfRooms
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="7c473f34-f4f4-4489-b5f8-7255504d724b" message="#[payload]"/>
+		<wsc:consume doc:name="Consume" doc:id="88a77856-7db0-4149-8262-4b2ed789ec6a" config-ref="Web_Service_Consumer_Config" operation="getHotels"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a818dba4-4dac-4c88-bbd6-83da230d8fd0" message="#[payload]"/>
+		<choice doc:name="Choice" doc:id="58fb032d-1fad-4400-9472-cc2df7643fa9" >
+			<when expression="#[%dw 2.0&#10;ns ns0 http://www.bookmyholiday.com/hotels/&#10;---&#10;payload.body.getHotelsResponse.hotels.id != null]">
+				<ee:transform doc:name="Transform Message" doc:id="7d680727-f609-44ad-90ff-5d3d7313f111">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+ns ns0 http://www.bookmyholiday.com/hotels/
+
+output application/json
+---
+{
+	ID: payload.body.ns0#getHotelsResponse.hotels.id,
+	Name: payload.body.ns0#getHotelsResponse.hotels.name,
+	hotelNumber: payload.body.ns0#getHotelsResponse.hotels.number,
+	description: payload.body.ns0#getHotelsResponse.hotels.description,
+	rating: payload.body.ns0#getHotelsResponse.hotels.rating,
+	bookingTypes: payload.body.ns0#getHotelsResponse.hotels.*bookingTypes,
+	destination: payload.body.ns0#getHotelsResponse.hotels.*destination,
+	startDate: payload.body.ns0#getHotelsResponse.hotels.startDate,
+	endDate: payload.body.ns0#getHotelsResponse.hotels.endDate,
+	startTime: payload.body.ns0#getHotelsResponse.hotels.startTime,
+	endTime: payload.body.ns0#getHotelsResponse.hotels.endTime,
+	price: payload.body.ns0#getHotelsResponse.hotels.*price,
+	currency: payload.body.ns0#getHotelsResponse.hotels.currency
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="4c4659e4-6d3c-4d5e-b154-3d8d7ab02e80" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "No hotels found for search criteria."
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="16c5a80b-a5af-4968-af24-bce58b961eb2" message='"End of PRC API getHotelsFlow : " #[payload]'/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="8b569225-344c-4a73-99b7-3cde99ffbd7d" type="VALIDATION:BLANK_STRING">
+				<logger level="INFO" doc:name="Logger" doc:id="f89d2694-789a-4894-b2cf-d17fa21d79b8" message='"Error:"#[error.description]'/>
+				<ee:transform doc:name="Transform Message" doc:id="d6be58ce-5019-4282-93a8-c63c74fca446" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Error Message" : "Invalid user input : " ++ error.description as String
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value="400" doc:name="Set Variable" doc:id="566780b6-9ca6-449c-ae6c-029d0447febe" variableName="httpStatus"/>
+			</on-error-continue>
+		</error-handler>
+	
+</flow>
+	<flow name="getHotelFlow" doc:id="ea68f799-f18f-4119-812e-98dbe223fe46" >
+		<logger level="INFO" doc:name="Logger" doc:id="26b7bc55-7362-4ddc-bab1-15775d37fa6f" message='"PRC API getHotelFlow : "'/>
+		<ee:transform doc:name="Transform Message" doc:id="26343d2e-5cbf-4260-b9b7-be57d4d32cc2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyholiday.com/hotels/
+---
+{
+	ns0#getHotelDetails: {
+		"id": attributes.uriParams.hotels_id
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="1668ae17-340e-432c-bce4-25d5baec1194" config-ref="Web_Service_Consumer_Config" operation="getHotelDetails"/>
+		<choice doc:name="Choice" doc:id="7e8ace6b-bc9a-45d0-b2c5-3e4e21f03eca" >
+			<when expression="#[%dw 2.0&#10;ns ns0 http://www.bookmyholiday.com/hotels/&#10;---&#10;payload.body.ns0#getHotelDetailsResponse.hotelDetails.id != null]">
+				<ee:transform doc:name="Transform Message" doc:id="93e6f227-ebe2-4237-88f3-0fad910c0636">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+ns ns0 http://www.bookmyholiday.com/hotels/
+
+output application/json
+---
+{
+	ID: payload.body.ns0#getHotelDetailsResponse.hotelDetails.id,
+	Name: payload.body.ns0#getHotelDetailsResponse.hotelDetails.name,
+	hotelNumber: payload.body.ns0#getHotelDetailsResponse.hotelDetails.number,
+	description: payload.body.ns0#getHotelDetailsResponse.hotelDetails.description,
+	rating: payload.body.ns0#getHotelDetailsResponse.hotelDetails.rating,
+	bookingTypes: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*bookingtypes,
+	destination: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*destination,
+	startDate: payload.body.ns0#getHotelDetailsResponse.hotelDetails.startDate,
+	endDate: payload.body.ns0#getHotelDetailsResponse.hotelDetails.endDate,
+	startTime: payload.body.ns0#getHotelDetailsResponse.hotelDetails.startTime,
+	endTime: payload.body.ns0#getHotelDetailsResponse.hotelDetails.endTime,
+	availableRooms: payload.body.ns0#getHotelDetailsResponse.hotelDetails.availability,
+	roomType: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*roomTypes,
+	bedSize: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*bedSize,
+	price: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*price,
+	currency: payload.body.ns0#getHotelDetailsResponse.hotelDetails.currency,
+	images: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*images,
+	availableCoupons: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*availableCoupons,
+	cancellationPolicy: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*cancellationPolicy,
+	reschedulePolicy: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*reschedulePolicy
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="4baaf745-1832-4c33-9967-6ba777e4446b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "No hotels found for search criteria."
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="a390eeff-4a2b-4601-bcd6-8a91c1fdab8c" message='"End of PRC API getHotelFlow : " #[payload]'/>
+	
+</flow>
+	<flow name="addHotel" doc:id="8b2b0f00-9b3c-4631-bccb-4394a537234a" >
+		<logger level="INFO" doc:name="Logger" doc:id="daeb5533-0d76-4af7-99c6-3bbe4c9dc90e" message='"PRC API addHotel : "'/>
+		<ee:transform doc:name="Transform Message" doc:id="81e4813e-046a-4a65-b595-e26731903d3e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns htl http://www.bookmyholiday.com/hotels/
+---
+{
+	htl#addHotels: {
+		hotel: payload
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="addHotels" doc:name="Consume" doc:id="576f2b2f-b47a-43b5-8c3a-1cd5f7d929cb" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="d3844cb4-ac0a-4ad9-937c-b37d131d9f6d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://www.bookmyholiday.com/hotels/
+
+output application/json
+---
+{
+	id: payload.body.ns0#addHotelsResponse.id,
+	message: payload.body.ns0#addHotelsResponse.message
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="9c23c786-b8fe-4e73-ac02-f4d960da24f7" message='"End of PRC API addHotel : " #[payload]'/>
+	
+</flow>
+	<flow name="bookHotel" doc:id="4daac565-0610-4a12-a126-6b31319b652b" >
+		<logger level="INFO" doc:name="Logger" doc:id="73434cdf-7314-4585-af2f-14831e0fc199" message='"PRC API bookHotel : "'/>
+		<set-variable value="#[payload]" doc:name="Set inputPayload" doc:id="8b143c74-9999-4b71-95fe-49eb0cb52bc9" variableName="inputPayload"/>
+		<ee:transform doc:name="Transform Message" doc:id="168bc9c6-2c69-41bf-8306-4d22205b59f7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyholiday.com/hotels/
+---
+{
+	ns0#getHotelDetails: {
+		"id": attributes.uriParams.hotels_id
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="getHotelDetails" doc:name="Consume" doc:id="3a7755cc-6f41-4f3f-be48-1f8f9feddc82" config-ref="Web_Service_Consumer_Config"/>
+		<choice doc:name="Choice" doc:id="2bbc88d0-4b89-49e4-9fa8-1804e4c9770a" >
+			<when expression="#[%dw 2.0
+&#10;ns ns0 http://www.bookmyholiday.com/hotels/
+&#10;---
+&#10;payload.body.ns0#getHotelDetailsResponse.hotelDetails.id != null]">
+				<ee:transform doc:name="Transform Message" doc:id="af51e835-ee47-48e9-8f26-e6d3a76a40f0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://www.bookmyholiday.com/hotels/
+
+output application/json
+---
+{
+	ID: payload.body.ns0#getHotelDetailsResponse.hotelDetails.id,
+	Name: payload.body.ns0#getHotelDetailsResponse.hotelDetails.name,
+	hotelNumber: payload.body.ns0#getHotelDetailsResponse.hotelDetails.number,
+	description: payload.body.ns0#getHotelDetailsResponse.hotelDetails.description,
+	rating: payload.body.ns0#getHotelDetailsResponse.hotelDetails.rating,
+	bookingTypes: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*hoteltypes,
+	destination: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*destination,
+	startDate: payload.body.ns0#getHotelDetailsResponse.hotelDetails.startDate,
+	endDate: payload.body.ns0#getHotelDetailsResponse.hotelDetails.endDate,
+	startTime: payload.body.ns0#getHotelDetailsResponse.hotelDetails.startTime,
+	endTime: payload.body.ns0#getHotelDetailsResponse.hotelDetails.endTime,
+	availableSeats: payload.body.ns0#getHotelDetailsResponse.hotelDetails.availability,
+	price: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*price,
+	currency: payload.body.ns0#getHotelDetailsResponse.hotelDetails.currency,
+	availableCoupons: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*availablecoupons,
+	cancellationPolicy: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*cancellationPolicy,
+	reschedulePolicy: payload.body.ns0#getHotelDetailsResponse.hotelDetails.*reschedulePolicy
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value="#[payload]" doc:name="Set outputPayload" doc:id="df4c0f05-3924-46c6-b2d8-f80e9a6387cf" variableName="outputPayload"/>
+				<ee:transform doc:name="Transform Message" doc:id="c49f5330-1fc4-49e0-b313-fd0c8476f762">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyholiday.com/hotels/
+---
+{
+	ns0#getMaxBookingId: {
+		bookingid: "ABCD"
+	}
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<wsc:consume doc:name="Consume" doc:id="49754e25-dfa8-451d-bfa7-88beae66a98c" config-ref="Web_Service_Consumer_Config" operation="getMaxBookingId"/>
+				<ee:transform doc:name="Transform Message" doc:id="2efff268-5a50-43a8-acb0-05786cd88451">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+ns ns0 http://www.bookmyholiday.com/hotels/
+
+output application/json
+---
+{
+	bookingID: payload.body.ns0#getMaxBookingIdResponse.bookingid
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value='#[payload]' doc:name="Set setBookingID" doc:id="923793e0-736e-4f0a-b536-a30244cb7edf" variableName="setBookingID"/>
+				<logger level="INFO" doc:name="Logger" doc:id="11de6dbf-ec23-40db-8059-a1605d34605b" message="#[vars.setBookingID]" />
+				<choice doc:name="Choice" doc:id="29be37fd-933d-44f0-9a46-a4ba2208b3eb">
+					<when expression="#[vars.setBookingID != null]">
+						<choice doc:name="Choice" doc:id="a016cf69-5c43-4c0a-8365-3d2c40b32b5b" >
+							<when expression="#[vars.outputPayload.availableSeats &gt;= vars.inputPayload.noOfRooms]">
+								<ee:transform doc:name="Transform Message" doc:id="3fba6d5c-6e13-4b34-9356-2ae1c45f4c95">
+							<ee:message>
+								<ee:set-payload><![CDATA[output application/xml
+ns htl http://www.bookmyholiday.com/hotels/
+fun isInsuranceAppiled(insurance: Boolean) = do {
+	var insuranceStatus = 
+	if (insurance == true)
+		"Yes"
+	else
+		"No"
+	---
+	insuranceStatus 
+}
+
+---
+{
+	htl#addHotelBooking: {
+		hotelBooking: {
+			startDate: vars.inputPayload.departure_date,
+			destination: vars.inputPayload.destination,
+			bookingtype: vars.inputPayload.bookingtype,
+			noOfPassengers: vars.inputPayload.noOfPassengers,
+			insurance: isInsuranceAppiled(vars.inputPayload.insurance),
+			username: vars.inputPayload.userName,
+			userid: vars.inputPayload.userid,
+			isGuest: vars.inputPayload.isGuest,
+			contactNumber: vars.inputPayload.contactNumber,
+			couponName: vars.inputPayload.couponName,
+			serviceName: vars.outputPayload.Name,
+			serviceId: vars.outputPayload.ID,
+			serviceNumber: vars.outputPayload.hotelNumber,
+			endDate: vars.outputPayload.endDate,
+			startTime: vars.outputPayload.startTime,
+			endTime: vars.outputPayload.endTime,
+			hotelType: vars.inputPayload.hotelType,
+			noOfDays: vars.inputPayload.noOfDays,
+			noOfRooms: vars.inputPayload.noOfRooms,
+			roomType: vars.inputPayload.roomType,
+			bedSize: vars.inputPayload.bedSize,
+			fname: vars.inputPayload.firstName,
+			lname: vars.inputPayload.lastName,
+			availability: vars.outputPayload.availableSeats,
+			bookingId: "INR" ++ ((payload.bookingID splitBy  "INR")[1] as Number + 1 as String),
+			pnr: "INR" ++ ((payload.bookingID splitBy  "INR")[1] as Number + 1 as String),
+			couponApplied: vars.inputPayload.couponApplied,
+			(vars.outputPayload.price map ( payload01 , indexOfPayload01 ) -> {
+				price: {
+					baseFare: payload01.baseFare,
+					taxes: payload01.taxes,
+					total: payload01.total,
+					bookingtype: payload01.bookingtype
+			}
+			})
+		}
+	}
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+								<logger level="INFO" doc:name="Logger" doc:id="6201b507-9a6c-4f20-9791-1ec633d7bd48" message="#[payload]" />
+								<wsc:consume operation="addHotelBooking" doc:name="Consume" doc:id="3dbd0f94-497c-4b9b-bfe6-f96792e95cd1" config-ref="Web_Service_Consumer_Config" />
+								<ee:transform doc:name="Transform Message" doc:id="7fcdbb09-a489-423d-8f04-a3277e91d9dd">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.body.addHotelBookingResponse.id,
+	message: payload.body.addHotelBookingResponse.message
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+							</when>
+							<otherwise >
+								<ee:transform doc:name="Transform Message" doc:id="c7d7af62-e71a-4b52-91f9-1c71f4a4f2a9" >
+									<ee:message >
+										<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "Hotel is full."
+}]]></ee:set-payload>
+									</ee:message>
+								</ee:transform>
+							</otherwise>
+						</choice>
+					</when>
+					<otherwise >
+						<ee:transform doc:name="Transform Message" doc:id="3640dacc-e4c8-4b0b-bfcf-41220ac787e8">
+					<ee:message>
+						<ee:set-payload><![CDATA[output application/xml
+ns htl http://www.bookmyholiday.com/hotels/
+---
+{
+	htl#addHotelBooking: {
+		hotelBooking: {
+			startDate: vars.inputPayload.departure_date,
+			destination: vars.inputPayload.destination,
+			bookingtype: vars.inputPayload.bookingtype,
+			noOfPassengers: vars.inputPayload.noOfPassengers,
+			insurance: vars.inputPayload.insurance,
+			username: vars.inputPayload.userName,
+			userid: vars.inputPayload.userid,
+			isGuest: vars.inputPayload.isGuest,
+			contactNumber: vars.inputPayload.mobileNumber,
+			couponName: vars.inputPayload.couponName,
+			serviceName: vars.outputPayload.Name,
+			serviceId: vars.outputPayload.ID,
+			serviceNumber: vars.outputPayload.hotelNumber,
+			enddate: vars.outputPayload.endDate,
+			starttime: vars.outputPayload.startTime,
+			endtime: vars.outputPayload.endTime,
+			hotelType: vars.inputPayload.hotelType,
+			noOfDays: vars.inputPayload.noOfDays,
+			noOfRooms: vars.inputPayload.noOfRooms,
+			roomType: vars.inputPayload.roomType,
+			bedSize: vars.inputPayload.bedSize,
+			fname: vars.inputPayload.fname,
+			lname: vars.inputPayload.lname,
+			availability: vars.outputPayload.availableSeats,
+			bookingId: "INR" ++ 1001 as String,
+			pnr: "INR" ++ 1001 as String,
+			
+			(vars.outputPayload.price map ( payload01 , indexOfPayload01 ) -> {
+				price: {
+					baseFare: payload01.baseFare,
+					taxes: payload01.taxes,
+					total: payload01.total,
+					bookingtype: payload01.bookingtype
+			}
+			})
+		}
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+					</otherwise>
+				</choice>
+				<logger level="INFO" doc:name="Logger" doc:id="9a7ec7ff-fd63-40b3-a084-81863f7b9260" message='"End of PRC API bookHotel : " #[payload]'/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="d97f3961-09dc-48b0-a326-1e48bf3788cf" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "No hotels found."
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="c7c73676-3f60-423c-8b00-e1a037a58f8c" message="#[payload]"/>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="updateHotelDetails" doc:id="c8777dd9-a605-495a-8204-1b1a732e11b8" >
+		<logger level="INFO" doc:name="Logger" doc:id="f2efd003-2a98-498b-8f04-11b8719433c3" message='"PRC API updateHotelDetails : "'/>
+		<ee:transform doc:name="Transform Message" doc:id="f47dfcb7-4fcd-4316-822f-88d93ca91f03" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns htl http://www.bookmyholiday.com/hotels/
+---
+{
+	htl#updateHotels: {
+		id: payload.id,
+		hotels: payload
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="b3ff4998-56e3-42db-9cae-bea573d1a75a" message="#[payload]"/>
+		<wsc:consume operation="updateHotels" doc:name="Consume" doc:id="13c0e2dc-2136-49e5-87e4-8a0db5ef8a49" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="54211ac9-d37b-4b99-89a9-019a16e7ffec" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[ns ns0 http://www.bookmyholiday.com/hotels/
+
+output application/json
+---
+{
+	message: payload.body.ns0#updateHotelsResponse.message
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="4ec70ef9-947a-4d27-acc5-f867ea525aa0" message='"End of PRC API updateHotelDetails : " #[payload]'/>
+	</flow>
+
+	<sub-flow name="setVariable" doc:id="28d3abf3-1b3b-4c53-a402-0e79d2df33e0" >
+		<set-variable value="#[attributes.queryParams.source]" doc:name="Set Source" doc:id="27f99c39-161c-4d49-8ff2-64515d703a94" variableName="source"/>
+		<set-variable value="#[attributes.queryParams.destination]" doc:name="Set Destination" doc:id="49251fe2-39d8-4ee5-aa47-a21d6316205f" variableName="destination"/>
+	</sub-flow>
+	<sub-flow name="validation" doc:id="46cbc2fc-9e45-404c-95c8-b818058cdbc0" >
+		<validation:is-not-null doc:name="Source is null" doc:id="36b0bac5-a182-4a0f-9da2-97a9c8eaca2b" value="#[attributes.queryParams.source]" message='"Source Is Null"'>
+		</validation:is-not-null>
+		<validation:is-not-null doc:name="destination is null" doc:id="38a7e43e-0010-4f92-9878-60e828194bea" value="#[attributes.queryParams.destination]" message='"Destination Is Null"' />
+		<validation:is-not-null doc:name="no of cars Is null" doc:id="b33710d0-8fda-4952-96f0-8ec3cb645234" value="#[attributes.queryParams.noOfCars]" message='"No of Cars Is Null"' />
+	</sub-flow>
+	<flow name="getcabsFlow" doc:id="a83c47be-66db-4671-8197-4930b77670fb" >
+		<logger level="INFO" doc:name="Logger" doc:id="05531efa-9fcb-4697-9390-c9425953ea21" message='"Start of Get cab service for source " #[attributes.queryParams.source] " and " #[attributes.queryParams.destination]'/>
+		<flow-ref doc:name="validation" doc:id="b86c8271-10aa-49df-b69f-e7b3ef7d7d54" name="validation" />
+		<flow-ref doc:name="set source" doc:id="e0761858-d310-434e-bab2-0ff1e04ab544" name="setVariable" />
+		<http:request method="GET" doc:name="Request get cabs api" doc:id="f3e57409-e9db-4aa9-8ea2-49f906dbfda4" config-ref="HTTP_Request_configuration1" path="/cabs">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"endDate" : attributes.queryParams.endDate,
+	"source" : attributes.queryParams.source,
+	"startDate" : attributes.queryParams.startDate,
+	"noOfCars" : attributes.queryParams.noOfCars,
+	"destination" : attributes.queryParams.destination
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="cabs api Logger" doc:id="8761d5e7-36f8-4865-b377-58873b283d3c" message='"Cab Details Received as " #[payload] '/>
+		<choice doc:name="Choice" doc:id="97ab955d-0d90-48c3-856b-bde3af2dad3d" >
+			<when expression="#[payload[0].id != null]">
+				<ee:transform doc:name="map to target" doc:id="3656f9f7-7c55-4607-b01d-aafff17822d7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	id: payload01.id,
+	name: payload01.name,
+	number: payload01.number,
+	description: payload01.description,
+	rating: payload01.rating,
+	bookingTypes: read(payload01.carType, "application/json") map(value, index) ->{
+		bookingtype: value.cartype
+	},
+	startDate: payload01.startDate,
+	endDate: payload01.endDate,
+	startTime: now() as String {
+		format: "KK:mm:ss a"
+	},
+	endTime: now() as String {
+		format: "KK:mm:ss a"
+	},
+	noOfDays: payload01.noOfDays,
+	origin: [{
+		locationCode: payload01.origin,
+		locationDescription: payload01.originLocationDesc
+	}],
+	destination: [{
+		locationCode: payload01.destination,
+		locationDescription: payload01.destinationLocationDesc
+	}],
+	price: read(payload01.price, "application/json") map(value, index) -> {
+		baseFare: if ( payload01.surgeMultiplier > 1 ) (value.baseFare * payload01.surgeMultiplier) else value.baseFare,
+		taxes: value.taxes,
+		total: if ( payload01.surgeMultiplier > 1 ) ((value.baseFare * payload01.surgeMultiplier) + value.taxes) else (value.baseFare + value.taxes),
+		bookingtype: value.cartype
+	},
+	currency: payload01.currency,
+	baggage: {
+		total: payload01.baggage
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="response data Logger" doc:id="b8312849-9161-46a9-878a-f4d50c3e6be2" message='"Response to send " #[payload]'/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="No Data Found" doc:id="71bd953e-8d90-4f50-b411-1fca6c762b54" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "statusCode": "204",
+  "errorMessage": "No Data Found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value="204" doc:name="Set httpStatus" doc:id="7555fded-9266-4eb2-848c-6264d62ba555" variableName="httpStatus"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="e1b03e35-6da7-4b5c-9173-a1eb27f92756" message='"End of Get cab service for source " #[vars.source] " and " #[vars.destination]' />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b8df0020-8725-473c-987e-75df74bab14a" type="VALIDATION:NOT_NULL">
+				<logger level="INFO" doc:name="Logger" doc:id="0e00b1c1-293d-4f81-b4c1-b1f07e37bdc6" message='"Validation Error: " #[error.description]'/>
+				<ee:transform doc:name="Transform Message" doc:id="41fb53d8-49d5-479f-9879-64a7ef291741" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "400",
+  "ErrorMessage": error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="8467d217-7735-4804-8c01-694e9677a285" type="ANY">
+				<logger level="INFO" doc:name="Logger" doc:id="c9e693c2-28df-4e5c-af39-54e86faa2521" message='"Other Error: " #[error.description]' />
+				<ee:transform doc:name="Transform Message" doc:id="5084bb1b-f6c3-4417-9664-dfc82aea19f3" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "500",
+  "ErrorMessage": error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="getCabDetailsFlow" doc:id="a2dae249-1eb0-4232-8416-7dff0041749b" >
+		<logger level="INFO" doc:name="start Logger" doc:id="deb1394d-2999-428a-8e7a-cfba15414dac" message='"Start of Get cab details service for source " #[attributes.uriParams.cabs_id]' />
+		<validation:is-number doc:name="Is number" doc:id="363ad11c-23ff-4b12-a9ff-ed92ef1eaeb8" value="#[attributes.uriParams.cabs_id]" numberType="INTEGER"/>
+		<set-variable value="#[attributes.uriParams.cabs_id]" doc:name="Set cab id" doc:id="24b61c63-9373-4876-a97c-313e0dfefd12" variableName="cabid"/>
+		<http:request method="GET" doc:name="Request get cab details api" doc:id="1c4b1465-2bd4-4996-9a00-eb3fb4ddf23a" config-ref="HTTP_Request_configuration1" path="/cabs/{cab_id}" >
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"cab_id" : vars.cabid
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"endDate" : attributes.queryParams.endDate,
+	"source" : attributes.queryParams.source,
+	"startDate" : attributes.queryParams.startDate,
+	"noOfCars" : attributes.queryParams.noOfCars,
+	"destination" : attributes.queryParams.destination
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="request received log" doc:id="941af02f-1106-4a63-8166-6de0752223f6" message='"Request received : " #[payload]'/>
+		<choice doc:name="Choice" doc:id="ba19d009-7bbf-4efc-a3df-985173826394" >
+			<when expression="#[payload.id != null]">
+				<ee:transform doc:name="Transform Message" doc:id="ad3ca6d7-613c-4d46-ac3a-675ed1c53b4c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+	name: payload.name,
+	number: payload.number,
+	bookingtype: read(payload.carType, "application/json") map(value, index) -> {
+		bookingtype : value.cartype
+	},
+	rules: [{
+		rule: ""
+	}],
+	images: read(payload.images, "application/json") map(value, index) -> {
+		image: value.image
+	},
+	startDate: payload.startDate,
+	endDate: payload.endDate,
+	startTime: now() as String {
+		format: "KK:mm:ss a"
+	},
+	endTime: now() as String {
+		format: "KK:mm:ss a"
+	},
+	origin: [{
+		locationCode: payload.origin,
+		locationDescription: payload.originLocationDesc
+	}],
+	destination: [{
+		locationCode: payload.destination,
+		locationDescription: payload.destinationLocationDesc
+	}],
+	availability: payload.availableCars,
+	noOfDays: payload.noOfDays,
+	price: read(payload.price, "application/json") map(value, index) -> {
+		baseFare: if ( payload.surgeMultiplier > 1 ) (value.baseFare * payload.surgeMultiplier) else value.baseFare,
+		taxes: value.taxes,
+		total: if ( payload.surgeMultiplier > 1 ) ((value.baseFare * payload.surgeMultiplier) + value.taxes) else (value.baseFare + value.taxes),
+		bookingtype: value.cartype
+	},
+	currency: payload.currency,
+	availableCoupons: read(payload.availableCoupons, "application/json") map(value, index) ->{
+		code: value.code,
+		description: value.description,
+		rule: value.rule
+	},
+	baggage: {
+		total: payload.baggage
+	},
+	cancellationPolicy:read(payload.cancellationPolicy, "application/json") map(value, index) ->{
+		timeFrame: value.timeFrame,
+		charges: value.charges
+	},
+	reschedulePolicy: read(payload.reschedulePolicy, "application/json") map(value, index) ->{
+		timeFrame: value.timeFrame,
+		charges: value.charges
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="response sent log" doc:id="d1979307-2ad2-4737-a070-3a7b09e43c8d" message='"Response to send : " #[payload]' />
+			</when>
+			<otherwise >
+				<ee:transform doc:name="No Data Found" doc:id="db13692e-71af-4425-89bc-9ef14f2b8cd4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "statusCode": "204",
+  "errorMessage": "No Data Found for id"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value="204" doc:name="Set httpStatus" doc:id="7d3fe571-056f-448b-b5e9-3b1665be42bb" variableName="httpStatus" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="end Logger" doc:id="e395f308-570e-4fb8-a6a5-8e6531ebd8e4" message='"End of Get cab details service for source " #[vars.cabid]' />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="61362169-c753-4bea-aa84-66fa29826054" type="VALIDATION:INVALID_NUMBER" >
+				<logger level="INFO" doc:name="Logger" doc:id="a8962ae2-f9c1-44af-ba55-395683eaa127" message='"Validation Error: " #[error.description]' />
+				<ee:transform doc:name="Transform Message" doc:id="d4807fc3-5ef0-436a-b61c-82e35ff5f383" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "400",
+  "ErrorMessage": error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="aaa7f06a-ea78-4a58-95c7-bf3b41013f58" type="ANY" >
+				<logger level="INFO" doc:name="Logger" doc:id="df82637d-5949-42e5-b310-e46bad336b72" message='"Other Error: " #[error.description]' />
+				<ee:transform doc:name="Transform Message" doc:id="96015303-bb90-449c-96e2-0a5f8d705ac9" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "500",
+  "ErrorMessage": error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="addCabsFlow" doc:id="db871521-ec8d-4f47-8a31-7f868150810a" >
+		<logger level="INFO" doc:name="Logger" doc:id="35a2c320-55f7-4abd-bc66-ee871f434ca5" message='"Start of add cab details service for cabs " #[payload.number]'/>
+		<ee:transform doc:name="Null Validation" doc:id="a1e457e1-e2a1-4b63-a512-6c8940e0d9e8">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="nullValidate"><![CDATA[%dw 2.0
+var validate = (if(payload.name == null )   'Name is null ' else '') 
+					++ (if(payload.number == null )   'Number is null ' else '') 
+					++ (if(payload.rating == null )   'rating is null ' else '') 
+					++ (if(payload.bookingTypes == null )   'bookingTypes is null ' else '') 
+					++ (if(payload.startDate == null )   'startDate is null ' else '') 
+					++ (if(payload.endDate == null )   'endDate is null ' else '') 
+					++ (if(payload.origin == null )   'origin is null ' else '') 
+					++ (if(payload.destination == null )   'destination is null ' else '') 
+					++ (if(payload.noOfDays == null )   'noOfDays is null ' else '') 
+					++ (if(payload.currency == null )   'currency is null ' else '') 
+					++ (if(payload.price == null )   'price is null ' else '') 
+					++ (if(payload.baggage == null )   'baggage is null' else '')
+output application/java
+---
+validate]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set Payload" doc:id="33dda424-7941-4cb3-a09e-4b0ab02e8543" variableName="inputData"/>
+		<http:request method="GET" doc:name="get Max id" doc:id="31ab9981-e562-4663-9183-00fa16560248" config-ref="HTTP_Request_configuration1" path="/cabs/count/id" target="maxId"/>
+		<logger level="INFO" doc:name="Logger" doc:id="000b5cf8-1eee-4280-a311-59ec291dddfa" message='"Max Id received from Cabs: " #[payload]'/>
+		<choice doc:name="Choice" doc:id="a8ea319a-9c73-45a4-9371-987fe7edcefb" >
+			<when expression="#[vars.maxId != null]">
+				<set-payload value="#[vars.inputData]" doc:name="Set Payload" doc:id="2ac863be-d09c-4220-94dd-e6fe2b32a3c2" />
+				<logger level="INFO" doc:name="Logger" doc:id="1f237103-7bb8-49fe-86b8-efa1276c4090" message="#[vars.maxId]"/>
+				<ee:transform doc:name="map to add cabs" doc:id="cb8a8ca3-b04b-439b-92c5-a3656999ff1f">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: ((vars.maxId.idResponse as Number) + 1) as String,
+	name: payload.name,
+	number: payload.number,
+	description: payload.description default "",
+	rating: payload.rating,
+	carType: write(payload.bookingtypes map(booking, index) -> {
+		cartype: booking.bookingtype
+	}, "application/json"),
+	startDate: payload.startDate,
+	endDate: payload.endDate,
+	noOfDays: payload.noOfDays,
+	origin: payload.origin[0].locationCode default "",
+	originLocationDesc: payload.origin[0].locationDescription default "",
+	destination: payload.destination[0].locationCode default "",
+	destinationLocationDesc: payload.destination[0].locationDescription default "",
+	currency: payload.currency,
+	baggage: payload.baggage.total,
+	surgeMultiplier: payload.surgeMultiplier,
+	availableseat: payload.availableSeats,
+	availableCars: payload.availability,
+	price: write(payload.price map(item,index) -> {
+		"baseFare" : item.baseFare,
+		"taxes" : item.taxes,
+		"total" : item.total,
+		"bookingtype" : item.bookingtype
+	}, "application/json"),
+	images: write(payload.images map(value, index) -> {
+		image: value.image
+	}, "application/json"),
+	availableCoupons: write(payload.availableCoupons map(value, index) -> {
+		code: value.code,
+		description: value.description,
+		rule: value.rule
+	}, "application/json"),
+	cancellationPolicy: write(payload.cancellationPolicy map(value, index) -> {
+		charges: value.charges,
+		timeFrame: value.timeFrame
+	}, "application/json"),
+	reschedulePolicy: write(payload.reschedulePolicy map(value, index) -> {
+		charges: value.charges,
+		timeFrame: value.timeFrame
+	}, "application/json")
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="log data" doc:id="6a429962-2190-4ccf-a4da-0c6c33c27a57" message='"Data to post on cabs " #[payload]'/>
+				<http:request method="POST" doc:name="post data" doc:id="d3dbf2ae-62c6-45ed-884d-af065a1e3a68" config-ref="HTTP_Request_configuration1" path="/cabs"/>
+				<choice doc:name="Choice" doc:id="01216979-e326-40c4-8125-19e676a4aad1" >
+					<when expression="#[payload.id !=null]">
+						<ee:transform doc:name="Transform Message" doc:id="c548f74a-a4a8-44ca-b59e-48cc26e709c1" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<logger level="INFO" doc:name="Logger" doc:id="12732b5a-a002-4985-9038-7cec5db6e2ad" message='"Response to send " #[payload]'/>
+					</when>
+					<otherwise >
+						<ee:transform doc:name="Transform Message" doc:id="cc3576ab-cd1a-45fe-ac30-6ef0912016a2" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "500",
+  "ErrorMessage": payload.message
+}]]></ee:set-payload>
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+					</otherwise>
+				</choice>
+			
+</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="e1e5ce63-729f-4afb-9ba6-0a88ed3db956" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "500",
+  "ErrorMessage": "Unable to get ID"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="eb5f8d1d-c072-48c2-810d-c401e90a7e6b" message='"End of add cab details service for cabs " #[vars.inputData.number]' />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2d8d973e-f3b3-42cb-9e4e-107b839f09e1" type="VALIDATION:NOT_BLANK_STRING">
+				<logger level="INFO" doc:name="Logger" doc:id="64122fb2-517b-4227-93d1-3e49fa936be9" message='"Error:" #[error.description]'/>
+				<ee:transform doc:name="Transform Message" doc:id="99021c2f-10e1-4b76-b1df-937e887cf4c4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "400",
+  "ErrorMessage": error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="01bd9f6e-f6cf-47b8-8e59-199a1bf26992" type="ANY" >
+				<logger level="INFO" doc:name="Logger" doc:id="02beb9ed-8fed-4136-a6bf-d71b034c4501" message='"Other Error: " #[error.description]' />
+				<ee:transform doc:name="Transform Message" doc:id="0bdf7922-7da2-4431-93db-f63232a57b5e" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "500",
+  "ErrorMessage": error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="addBookingFlow" doc:id="e92b79b5-475e-4c38-aa3b-c0a6c064908c" >
+		<logger level="INFO" doc:name="start Logger" doc:id="b5c9bcca-fd09-4b5d-81a1-342332b1678f" message='"Start of add Booking Flow for cab id " #[attributes.uriParams.cabs_id]'/>
+		<set-variable value="#[payload]" doc:name="Set Payload" doc:id="8495200d-b4d2-4ba9-aaad-32ba2e7bd3d3" variableName="inputData"/>
+		<set-variable value="#[attributes.uriParams.cabs_id]" doc:name="Set cab id" doc:id="5b74144d-86f4-41c9-8064-b5b8148dd8d6" variableName="cabid"/>
+		<http:request method="GET" doc:name="get cab Details" doc:id="156bc664-972e-438b-b24a-8f4c62e04a69" config-ref="HTTP_Request_configuration1" path="/cabs/{cab_id}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"cab_id" : vars.cabid
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="cab details Logger" doc:id="0de593d7-e974-4411-befd-e3016d59f161" message='"Received cab details :" #[payload]'/>
+		<choice doc:name="Choice" doc:id="0839cb36-1c15-46b3-bf63-9417f19e15ed" >
+			<when expression="#[payload.id !=null]">
+				<set-variable value="#[payload]" doc:name="Set cab details" doc:id="e7ccf37c-dda4-405b-aea9-6770c2d80632" variableName="cabDetails" />
+				<http:request method="GET" doc:name="Get max booking id" doc:id="70d17d76-c7e0-4b1b-8f6d-5f82a7414b2d" config-ref="HTTP_Request_configuration1" path="/cabs/count/bookingid" />
+				<logger level="INFO" doc:name="Get Max booking Logger" doc:id="4920759f-9e28-4b77-b91b-a0d62fe70ab0" message='"Booking ID received " #[payload] '/>
+				<ee:transform doc:name="next booking id" doc:id="6123aa57-8c94-4af9-8eb6-91f6a120afcd">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/java
+---
+"CAB-" ++ leftPad((((substring(payload.bookingResponse, 4, sizeOf(payload.bookingResponse)) as Number) + 1) as String), 4, "0")
+
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value="#[payload]" doc:name="Set booking id" doc:id="d9f2037c-1470-40ea-a226-fb7cf6c59c82" variableName="bookingid" />
+				<http:request method="GET" doc:name="Get available cars Request" doc:id="de21aa50-f9ce-4bda-a42c-df5abc402b3b" config-ref="HTTP_Request_configuration1" path="/cabs/count/availability/{id}" target="availability">
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"id" : vars.cabid
+}]]]></http:uri-params>
+				</http:request>
+				<logger level="INFO" doc:name="available car Logger" doc:id="b505474b-6dee-4444-8b5a-1d395fdb7da5" message='"Available Cars " #[vars.availability]' />
+				<set-payload value="#[vars.inputData]" doc:name="Set Payload" doc:id="7d1608cd-af88-4a47-847e-fef4cc2c99db" />
+				<ee:transform doc:name="map to Request" doc:id="90a1f57f-3936-4695-bc00-7212a8964218">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+var coupons = if(payload.couponApplied and payload.couponName !=null) 
+(read(vars.cabDetails.availableCoupons, "application/json")  filter ((value, index)  -> (payload.couponName == value.code))
+)
+else ""
+
+var newPrice = if(coupons != "") (payload.price  - (coupons[0].rule as Number)) else payload.price
+
+output application/json
+---
+{
+	startDate: payload.departure_date,
+	endDate: payload.return_date,
+	startTime: now() as String {
+		format: "KK:mm:ss"
+	},
+	endTime: now() as String {
+		format: "KK:mm:ss"
+	},
+	origin: payload.origin default "",
+	destination: payload.destination,
+	cartype: payload.bookingtype,
+	noOfPassengers: payload.noOfPassengers,
+	insurance: payload.insurance default true,
+	userName: if ( payload.isGuest ) 'Guest' else payload.userName,
+	fname: payload.firstName,
+	lname: payload.lastName default "",
+	userid: if ( payload.isGuest ) 'Guest' else payload.userid default "",
+	isGuest: payload.isGuest,
+	contactNumber: payload.contactNumber,
+	couponName: payload.couponName default "",
+	couponApplied: payload.couponApplied,
+	price: newPrice,
+	bookingid: vars.bookingid,
+	serviceName: vars.cabDetails.name,
+	serviceNumber: vars.cabDetails.number,
+	noOfCars: payload.noOfCars,
+	availableCars: vars.availability.availability
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<logger level="INFO" doc:name="request Logger" doc:id="5dce492a-dec7-485e-befe-76c5e7dc17a2" message='"Request data to send " #[payload]'/>
+				<http:request method="POST" doc:name="add booking request" doc:id="e9373146-c416-40db-a1fe-6527f6aa6a7a" config-ref="HTTP_Request_configuration1" path="/cabs/{cab_id}">
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"cab_id" : vars.cabid
+}]]]></http:uri-params>
+				</http:request>
+				<choice doc:name="Choice" doc:id="b9899b2e-a549-4e5c-aa9e-8bf049e15cce" >
+					<when expression="#[payload.bookingid != null]">
+						<ee:transform doc:name="Transform Message" doc:id="aa1631ea-21b6-4cb7-8a2c-903b6ffb2254" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<logger level="INFO" doc:name="Response Logger" doc:id="57706d18-c14f-4d93-91a9-07a3c2abd87d" message='"Response to send" #[payload]'/>
+					</when>
+					<otherwise >
+						<ee:transform doc:name="No Data Found" doc:id="4ef501ad-1f1f-418a-8502-5e66f5625de6" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "statusCode": "500",
+  "errorMessage": "Not able to submit booking " ++ payload.message
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<set-variable value="500" doc:name="Set httpStatus" doc:id="91ca88f1-77af-4b9c-b1d5-1e5a3606075b" variableName="httpStatus" />
+					</otherwise>
+				</choice>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="No Data Found" doc:id="99022aa7-e697-4387-86ae-e91da668bac8" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "statusCode": "500",
+  "errorMessage": "Not able to get the cab details " ++ vars.cabid
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value="500" doc:name="Set httpStatus" doc:id="7271042f-1c7e-44e0-9ddc-e0e3a2d849e1" variableName="httpStatus" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="end Logger" doc:id="15ff4dbb-59bf-47c3-b71d-532db2258a0c" message='"End of add Booking Flow for cab id " #[vars.cabid]' />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="71c0e076-3689-4686-8d73-f8ce788d3a74" type="ANY" >
+				<logger level="INFO" doc:name="Logger" doc:id="2fc5f47d-b5fc-459e-8b9e-c1db22309af9" message='"Validation Error: " #[error.description]' />
+				<ee:transform doc:name="Transform Message" doc:id="75d9d31f-0672-4f8a-87c4-4c10c912b65f" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "400",
+  "ErrorMessage": error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="updateCabsFlow" doc:id="0f338dbd-d069-4677-9e50-0e4fe891f5b8">
+		<logger level="INFO" doc:name="start of Logger" doc:id="29a7b683-c56a-446b-adfd-f7724109bd78" message='"Start of Update Cab flow for id: " #[payload.id]' />
+		<validation:is-not-null doc:name="Is not null" doc:id="3515c010-5a8f-42c5-a82f-d59280089fd4" value="#[payload.id]" message='"ID is null"' />
+		<ee:transform doc:name="map to update cabs" doc:id="6cc4c4ea-6993-4af1-a628-b2bb439c6bac">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+	name: payload.name,
+	number: payload.number,
+	description: payload.description default "",
+	rating: payload.rating,
+	carType: write(payload.bookingTypes map(booking, index) -> {
+		cartype: booking.bookingtype
+	}, "application/json"),
+	startDate: payload.startDate,
+	endDate: payload.endDate,
+	noOfDays: payload.noOfDays,
+	origin: payload.origin.locationCode default "",
+	originLocationDesc: payload.origin.locationDescription default "",
+	destination: payload.destination.locationCode default "",
+	destinationLocationDesc: payload.destination.locationDescription default "",
+	currency: payload.currency,
+	baggage: payload.baggage.total,
+	surgeMultiplier: payload.surgeMultiplier,
+	availableseat: payload.availableSeats,
+	availableCars: payload.availability,
+	price: {
+		baseFare : payload.price.baseFare,
+		total: payload.price.total,
+		taxes: payload.price.taxes
+	},
+	images: write(payload.images map(value, index) -> {
+		image: value.image
+	}, "application/json"),
+	availableCoupons: write(payload.availableCoupons map(value, index) -> {
+		code: value.code,
+		description: value.description,
+		rule: value.rule
+	}, "application/json"),
+	cancellationPolicy: write(payload.cancellationPolicy map(value, index) -> {
+		charges: value.charges,
+		timeFrame: value.timeFrame
+	}, "application/json"),
+	reschedulePolicy: write(payload.reschedulePolicy map(value, index) -> {
+		charges: value.charges,
+		timeFrame: value.timeFrame
+	}, "application/json")
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="id"><![CDATA[%dw 2.0
+output application/java
+---
+payload.id]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="request Logger" doc:id="2c18c3c4-95ee-4ebe-bb5b-385bd0eb80b1" message='"Request to send to update cabs " #[payload]'/>
+		<http:request method="PUT" doc:name="put data" doc:id="9b08226f-d2bc-49ad-9fef-82c93bc48f2f" config-ref="HTTP_Request_configuration1" path="/cabs" />
+		<choice doc:name="Choice" doc:id="eb4ab238-da70-4c49-9d7b-491bf236d175">
+			<when expression="#[payload.idResponse != null]">
+				<ee:transform doc:name="Transform Message" doc:id="33bd9607-060e-4111-9312-888a8f34c2e5">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="response Logger" doc:id="7e2cc56e-d5c7-4396-8817-e0f462da05b8" message='"Response to send " #[payload]'/>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="6ffbbffb-3076-4749-a219-1c543403c569">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "500",
+  "ErrorMessage": payload.message
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="end of Logger" doc:id="24c72dc0-4577-4e27-b7e8-931f91362cf7" message='"End of Update Cab flow for id: " #[vars.id]' />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f6fe96a3-7886-4448-9db6-eec6b43129dc" type="VALIDATION:NULL" >
+				<logger level="INFO" doc:name="Logger" doc:id="647c40a7-d270-45f4-b052-64531483d660" message='"Validation Error:" #[error.description]' />
+				<ee:transform doc:name="Transform Message" doc:id="b73af406-7311-4602-9977-67502188419b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "400",
+  "ErrorMessage": error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="acd471e3-da10-40ee-bf36-5af5f2176153" type="ANY" >
+				<logger level="INFO" doc:name="Logger" doc:id="11ed2267-bb6f-44e9-96f1-24b2236ca6d6" message='"Other Error: " #[error.description]' />
+				<ee:transform doc:name="Transform Message" doc:id="5389a331-1b7b-4fb3-aa64-df9ad92320e9" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "500",
+  "ErrorMessage": error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="cancelBookingFlow" doc:id="7f5d52d8-3297-41c2-89a7-f07f7439a185" >
+		<logger level="INFO" doc:name="Logger" doc:id="f329c994-cb3c-4876-86bc-4eda4d594c9e" message='"Start of Cancel Booking " #[payload.booking_number]'/>
+		<set-variable value="#[attributes.uriParams.cabs_id]" doc:name="Set cab id" doc:id="331346f0-9ca7-4354-b1d8-30682a3e8f92" variableName="cabid"/>
+		<ee:transform doc:name="map to request" doc:id="b6b6d394-eebc-4c70-a2d3-26823a874106" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"bookingid" : payload.booking_number,
+	"noOfCars" : payload.noOfCars
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="bookingid" ><![CDATA[payload.booking_number]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5b2962f2-eda1-4921-be5a-83ace1eda406" message="#[payload]  #[vars.cabid]"/>
+		<http:request method="PUT" doc:name="cancel booking request" doc:id="7a68eeb6-7de8-4e18-bee9-6cf1d7f2bc47" config-ref="HTTP_Request_configuration1" path="/cabs/{cab_id}" >
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"cab_id" : vars.cabid
+}]]]></http:uri-params>
+		</http:request>
+		<choice doc:name="Choice" doc:id="f3a99619-57b3-42f8-9866-6bdc78551c30" >
+			<when expression="#[payload.bookingid != null]">
+				<ee:transform doc:name="Transform Message" doc:id="186acd80-75ee-4ea8-a230-de1645dadadd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="18499583-6337-4c1c-af26-1eda9ceccd98" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"StatusCode": "400",
+  "ErrorMessage": error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End Logger" doc:id="0d865bcc-7ed5-4fed-b268-43724dbc6b8e" message='"End of Cancel Booking " #[vars.bookingid]' />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e824a1e9-dcb8-4cf5-ae25-6e3ecbea8963" type="ANY" >
+				<logger level="INFO" doc:name="Error Logger" doc:id="a03f3c59-2ff8-4cc6-ad48-0c36354057b7" message='"Error: " #[error.description]' />
+				<ee:transform doc:name="error Transform Message" doc:id="aaf47a6d-e335-40bd-99f8-de7c55a513ff" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "StatusCode": "400",
+  "ErrorMessage": error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+
+</mule>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="1b77bf86-1de0-40d4-b164-f9b9861c0701" file="${env}_config.yaml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="bb225bc1-3ac2-47a1-9ced-3a25580b7920" >
+		<http:listener-connection host="0.0.0.0" port="${http.port1}" readTimeout="300000"/>
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="1378b17f-37ee-4891-a20f-20246dbdd36e" responseTimeout="900000" >
+		<http:request-connection host="${flights.host}" port="${flights.port}" connectionIdleTimeout="9000000" />
+	</http:request-config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="43ba5bb1-eb0c-4c07-9268-59ef41a38047" >
+		<wsc:connection wsdlLocation="${hotels.url}" service="${hotels.service}" port="${hotels.port}">
+			<wsc:custom-transport-configuration >
+				<wsc:default-http-transport-configuration timeout="5000000" />
+			</wsc:custom-transport-configuration>
+		</wsc:connection>
+	</wsc:config>
+	<configuration doc:name="Configuration" doc:id="011046fd-4145-4233-9767-7b08c6e771d6" defaultErrorHandler-ref="globalError_Handler" />
+	<global-property doc:name="Global Property" doc:id="005d7c84-7c26-4cc1-8c20-97545b7812b9" name="env" value="local" />
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="3f26bb9e-d0c8-43dd-9393-d0fdc1b0db2f" basePath="${cabs.basepath}" >
+		<http:request-connection host="${cabs.host}" port="${cabs.port}" />
+	</http:request-config>
+	<error-handler name="globalError_Handler" doc:id="be9e3249-40fb-4c21-b914-f05b38a459b6" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="96d4b53e-8fd9-41a9-9a3f-dba62b205bc8" type="WSC:BAD_REQUEST, WSC:BAD_RESPONSE, WSC:CONNECTIVITY, WSC:INVALID_WSDL, WSC:SOAP_FAULT, WSC:TIMEOUT">
+			<logger level="INFO" doc:name="Logger" doc:id="29e1acc1-2728-4b91-a3c2-620e7c0f6b13" message='"Error:"#[error.description]'/>
+			<ee:transform doc:name="Transform Message" doc:id="d311377c-d593-4698-8dbc-d1a626979106" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	'message' : 'Data unavailable. Try later.' ++ error.description as String
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<set-variable value="500" doc:name="Set Variable" doc:id="247020a6-d8e0-4260-b99a-2e9c54f26c8d" variableName="httpStatus"/>
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ba62e3ea-bcd4-4ebc-8c5c-9c932628927b" type="HTTP:BAD_GATEWAY, HTTP:BAD_REQUEST, HTTP:CLIENT_SECURITY, HTTP:CONNECTIVITY, HTTP:FORBIDDEN, HTTP:INTERNAL_SERVER_ERROR, HTTP:METHOD_NOT_ALLOWED, HTTP:NOT_ACCEPTABLE, HTTP:NOT_FOUND, HTTP:PARSING, HTTP:RETRY_EXHAUSTED, HTTP:SECURITY, HTTP:SERVICE_UNAVAILABLE, HTTP:TIMEOUT, HTTP:TOO_MANY_REQUESTS, HTTP:UNAUTHORIZED, HTTP:UNSUPPORTED_MEDIA_TYPE, EXPRESSION, STREAM_MAXIMUM_SIZE_EXCEEDED">
+			<logger level="INFO" doc:name="Logger" doc:id="ac9c2fe1-deb3-4ee8-a101-c07178f43cd0" message='"Error:"#[error.description]'/>
+			<ee:transform doc:name="Transform Message" doc:id="7da4b107-9e9d-49e6-836b-e73992d4a054" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Error" : error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<set-variable value="500" doc:name="Set Variable" doc:id="62ccb895-b822-4a44-b5e3-04e3bdf31f71" variableName="httpStatus"/>
+		</on-error-continue>
+	</error-handler>
+</mule>

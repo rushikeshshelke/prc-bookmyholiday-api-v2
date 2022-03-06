@@ -1,0 +1,116 @@
+[
+  {
+    "id":"1",
+    "name" : "Taj Group",
+    "number" : "Taj-122",
+    "description" : "Lavish rooms, multiple dining spots, an outdoor swimming pool and a host of amenities await you for a delightful stay at this luxurious property.",
+    "propertyHightlights" : "Resort Rooms",
+    "rating" : 5,
+    "bookingTypes" : 
+      [
+        {
+          "bookingtype" : "Sea view Resort"
+        },
+        {
+          "bookingtype" : "Standard Resort"
+        }
+      ],
+    "startDate": "2022-02-22",
+    "endDate" : "2022-02-23",
+    "startTime" : "12:15:00",
+    "endTime" : "10:45:00",
+    "noOfDays" : 2,
+    "layOver" : 0,
+    "noOfStops" : 0,
+    "stopLocation":
+        [],
+    "origin" :
+      [{
+        "locationCode" : "",
+        "locationDescription" : ""
+      }],
+    "destination" : 
+      [{
+        "locationCode" : "GOA",
+        "locationDescription" : "Goa"
+      }],
+    "price" : 
+      [{
+        "baseFare" : 4000,
+        "taxes" : 1000,
+        "total" : 5000,
+        "bookingtype":"Sea view Resort"
+      },{
+        "baseFare" : 3000,
+        "taxes" : 1000,
+        "total" : 4000,
+        "bookingtype":"Standard Resort"
+      }],
+    "currency" : "INR",
+    "baggage" : 
+      {
+        "total" : 0,
+        "cabin" : 0,
+        "checkin" : 0
+      }
+  },
+  {
+    "id":"2",
+    "name" : "Taj Group",
+    "number" : "Taj-123",
+    "description" : "Lavish rooms, multiple dining spots, an outdoor swimming pool and a host of amenities await you for a delightful stay at this luxurious property.",
+    "propertyHightlights" : "Resort Rooms",
+    "rating" : 5,
+    "bookingTypes" : 
+      [
+        {
+          "bookingtype" : "Garden view Resort"
+        },
+        {
+          "bookingtype" : "Standard Resort"
+        }
+      ],
+    "startDate": "2022-02-22",
+    "endDate" : "2022-02-23",
+    "startTime" : "12:15:00",
+    "endTime" : "10:45:00",
+    "noOfDays" : 2,
+    "layOver" : 0,
+    "noOfStops" : 0,
+    "stopLocation":
+      [
+        {
+          "location" : ""
+        }
+      ],
+    "origin" :
+      [{
+        "locationCode" : "",
+        "locationDescription" : ""
+      }],
+    "destination" : 
+      [{
+        "locationCode" : "GOA",
+        "locationDescription" : "Goa"
+      }],
+    "price" : 
+      [{
+      "baseFare" : 4000,
+      "taxes" : 1000,
+      "total" : 5000,
+      "bookingtype":"Sea view Resort"
+    },{
+      "baseFare" : 3000,
+      "taxes" : 1000,
+      "total" : 4000,
+      "bookingtype":"Standard Resort"
+    }],
+    "currency" : "INR",
+    "baggage" : 
+      {
+        "total" : 0,
+        "cabin" : 0,
+        "checkin" : 0
+      }
+  }
+]

@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="implementation-test-suite.xml" />
+	<munit:test name="implementation-test-suite-getFlightsFlowTest" doc:id="47dbaaf8-bb29-4e8b-b8b1-e564afb000f2" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="4e788cb3-954f-44d8-bbc5-9062b6a98391" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="18071512-c1f4-434c-add6-1480aa5c8edb" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json --- readUrl("classpath://test-inputs/flightDetails.json")]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="call setEvent" doc:id="e4846288-be2f-4bf9-a044-ed7686a3f40b" name="setEvent"/>
+			<flow-ref doc:name="Flow-ref to getFlightsFlow" doc:id="b968d9ad-5338-4023-9e19-101892173306" name="get:\flights:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="edbfa271-7370-468e-b02d-30ff04b499f2" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]" message="Payload is null or Media type is incorrect."/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="87bd7d8b-6c1a-40c0-97af-316c3a39d03b" />
+		</munit:validation>
+	</munit:test>
+	<sub-flow name="setEvent" doc:id="6fc62bf1-7abb-45e9-8c28-88181ef25556" >
+		<munit:set-event doc:name="Set Event" doc:id="b03b377f-d641-466b-b7e8-9b1a885ddb16" >
+			<munit:attributes value="#[{&#10;&#10;queryParams : {source:'BEN',destination:'CCU',startDate:'2022-02-24',noOfPassengers:2},&#10;uriParams : {flight_id: '6E-227'}&#10;&#10;}]" />
+		</munit:set-event>
+	</sub-flow>
+
+<munit:test name="implementation-test-suite-getFlightFlowTest" doc:id="72ac3a5b-c02f-4019-9435-b87b2f4094dd" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when http Request" doc:id="cb7d3126-f6e6-44db-a91a-dd1741c835cb" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="63a13333-a752-492f-b637-a4e7efa95621" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json --- readUrl("classpath://test-inputs/flightDetails.json")]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="call setEvent" doc:id="cf8c2ece-1cbc-43bf-a39e-a10b50d9e962" name="setEvent"/>
+			<flow-ref doc:name="Flow-ref to getFlightFlow" doc:id="d863e4d1-1ba9-47e4-917d-8743e060063b" name="get:\flights\(flight_id):bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="b63c7d26-9041-48be-ba53-0fa43cbdd274" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]" message="Payload is null or Media type is incorrect."/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="3e6b9838-b618-4416-b115-4258be5cb376" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getFlightFlowTest1" doc:id="7f272c8a-ed36-47a4-83b3-a792e162e6c3" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when setInitialValues" doc:id="0b804015-08fa-4f84-8207-3de15f681e3f" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="955260cb-4bc1-448d-8cd5-4907c8a33196" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="VALIDATION:BLANK_STRING" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="call setEvent" doc:id="124344d5-4e93-4869-aad5-0e7bbdf43579" name="setEvent"/>
+			<flow-ref doc:name="Flow-ref to getFlightFlow" doc:id="4704a86e-b947-47ff-b368-ea2501991571" name="get:\flights\(flight_id):bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="aa16714c-599f-4755-892d-6fb2c64a4cf3" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload."Error Message" must contain("Invalid user input")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-addFlightTest" doc:id="524f97ff-093a-4756-bd63-2feef1806569" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when http Request" doc:id="715fe662-1843-48c0-83f3-e0e632c57e33" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d0cfbf45-0670-4eaf-be91-6595ace85655" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json --- readUrl("classpath://test-inputs/addFlightResponse.json")]' />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="f6eef99a-ff6a-4c5e-bec2-88267ef3c2ae" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://test-inputs/addFlight.json")]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to addFlight" doc:id="6d009a4d-d7c2-473a-a227-45c4b454b745" name="post:\flights:application\json:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="6083d666-a9d2-4f02-950c-170a3dea6898" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="2bf374d1-d199-4c13-8fe2-6bb4cd8cf1d8" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-bookFlightTest" doc:id="69b6904f-2da6-4199-b0ad-9a51a27bb17e" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when http Request" doc:id="5108d3f0-3716-4594-8342-8c0fa56f00aa" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="94d37d0d-4a95-48d9-bf41-28e4607e70de" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json --- {"message": "Flight is full."}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="4364f979-05ad-4442-9a27-cddb99c2e0f7" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://test-inputs/bookFlight.json")]' />
+				<munit:attributes value="#[{
+&#10;
+&#10;uriParams : {flight_id: '6E-227'}
+&#10;
+&#10;}]" />
+
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to bookFlight" doc:id="76283d84-5938-4651-a71c-1da64d18f67e" name="post:\flights\(flight_id)\booking:application\json:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="39a68cec-4ce8-451c-9395-fcf0b8fda96a" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="fbe23240-f5ae-445c-97be-4571bb78cd89" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-cancelFlightTest" doc:id="0c46e2eb-4a30-4feb-8f1e-afab9563acbe" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when http Request" doc:id="f1d293c0-a91a-46d2-9011-029dbdfc4ace" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="69752101-a22e-44b4-a92c-37cd24d62c2b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json --- {"message": "No bookings for bookingID IND00001"}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="541036ec-89cc-4796-8437-aa2ec4ff0b42" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://test-inputs/cancelFlight.json")]' />
+				<munit:attributes value="#[{
+&#10;
+&#10;uriParams : {flight_id: '6E-227'}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to cancelFlight" doc:id="4d8234d0-ac56-49eb-8fca-f4f5875c937a" name="put:\flights\(flight_id)\booking:application\json:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="d42ebf2e-1d8f-4c44-9d27-4b373e62b1da" expression="#[payload]" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="a302ff4f-c833-4f71-a12d-e4d1cf663c4b" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getHotelsFlowTest" doc:id="20a1ca87-a7a2-40b8-ae00-0082afd1d9b2" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="a94257cb-64aa-4bf8-b59c-a3d24fc4d763" >
+				<munit:attributes value="#[{
+&#10;
+&#10;queryParams : {destination:'GOA',startDate:'2022-02-24',endDate:'2022-02-23',noOfPassengers:1}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getHotelsFlow" doc:id="8fdce44e-0934-4657-b537-8e9256e1f0ca" name="get:\hotels:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="2c47534a-9e36-41c7-80cf-4dd81d3db537" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="3cb79084-353f-40a6-8a0b-f6d0fd1befad" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getHotelFlowTest" doc:id="3de824e4-86aa-414d-88ce-fc67a6292d43" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="d273ba4f-1b76-4d68-b871-6cda65d2b04d" >
+				<munit:attributes value="#[{
+&#10;
+&#10;uriParams : {hotels_id: 1}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getHotelFlow" doc:id="83fe49f8-d46c-4cef-966c-3024359e579f" name="get:\hotels\(hotels_id):bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="720b0e45-6c09-4477-9880-9115ad17a80d" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="c18df2f5-31b5-4533-8e5c-fc7b79356f2c" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-addHotelTest" doc:id="5048c18f-072e-45fe-be7e-1f3f6322ec0c" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="e1873596-2eb3-4c13-b3ce-a26f40607a14" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://test-inputs/addHotel.json")]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to addHotel" doc:id="dd6ffd90-ea52-4dfe-8c84-27f9cb533da2" name="post:\hotels:application\json:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="fc3aad66-47eb-44bd-ad74-683771bcfdc7" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="7067a3cc-661a-4701-bbf2-52b122f6b75c" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-bookHotelTest" doc:id="60335f70-fa91-47d8-a641-1b7cfe39b44a" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="938ee0b6-de56-466d-a399-bd0782ef7ef9" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://test-inputs/bookHotel.json")]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to bookHotel" doc:id="bfb13c5b-e0ca-4b3b-bc7d-87e48dbb16df" name="post:\hotels\(hotels_id)\booking:application\json:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="b30351f0-816c-49d6-9e1e-420fdde30aa3" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="465a0ade-f334-459e-913d-16e3fb6daf22" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-updateHotelDetailsTest" doc:id="024d7b7f-c23c-4ff1-805f-cc5c81213dab" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="2761e033-682a-4dad-bdab-8362ad202046" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://test-inputs/updateHotel.json")]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to updateHotelDetails" doc:id="1ecfc8b7-f8c3-43c2-af4e-20d42502720d" name="put:\hotels:application\json:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="4dddc050-71fc-4184-8190-073508935d51" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="739be4ef-a298-4dd7-956d-7b1ea35be08d" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getHotelsFlowTest1" doc:id="f7fbc3bb-78ed-4026-8e70-38798b5c7bd6" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="87a23711-d622-4f06-9e84-fe3d48bf6b98" processor="validation:is-not-blank-string">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="378dbcac-a797-4b29-adb4-b606d171d7f0" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="VALIDATION:BLANK_STRING" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="bef029ae-d8ec-46bd-90f6-77092b2f3239" >
+				<munit:attributes value="#[{
+&#10;
+&#10;queryParams : {destination:'GOA',startDate:'2022-02-24',endDate:'2022-02-23',noOfPassengers:1}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getHotelsFlow" doc:id="db172f13-dba6-4dff-8173-9fb91052f2a4" name="get:\hotels:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="4fdebcac-80ff-4d4c-8523-5404324a44f0" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload."Error Message" must contain("Invalid user input")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getcabsFlowTest" doc:id="c37dbd54-9d13-47dc-9e70-5bf0bb0a123e" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="1bd1ff67-a956-4740-adfc-2a908e82fcde" >
+				<munit:attributes value="#[{
+&#10;
+&#10;queryParams : {source:'MUM',destination:'GOA',startDate:'2022-02-27',endDate:'2022-02-27',noOfCars:2}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getcabsFlow" doc:id="4d4a01d2-a915-4583-a086-ea50441f0cba" name="get:\cabs:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="e888b193-fbcf-4ed2-935a-002f9a09fb31" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="fefa27ee-cd2d-4344-bf04-83cb289ddb0f" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getcabsFlowTest1" doc:id="5efa550f-a2a4-432b-877f-2acf76416164" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when flow-ref" doc:id="e6078193-1123-48ba-a238-f4c9e575ec61" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b86c8271-10aa-49df-b69f-e7b3ef7d7d54" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="VALIDATION:NOT_NULL" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="12b110b8-fb6f-40ea-ba38-7aff98a47125" >
+				<munit:attributes value="#[{
+&#10;
+&#10;queryParams : {source:'MUM',destination:'GOA',startDate:'2022-02-27',endDate:'2022-02-27',noOfCars:2}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getcabsFlow" doc:id="3f1aa29d-5fea-4f61-a023-4b8bf957be3e" name="get:\cabs:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="0eabe573-6386-4182-8bd7-e27bcc92b3ff" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload."StatusCode" must contain("400")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getcabsFlowTest2" doc:id="6b586e5b-f1a5-4e91-bf1f-471e084f3364" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when http Request" doc:id="00b842cc-91cd-469f-bab5-3c8372cab466" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f3e57409-e9db-4aa9-8ea2-49f906dbfda4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="c992b363-dec0-4fa6-90a8-664ae180bf09" >
+				<munit:attributes value="#[{
+&#10;
+&#10;queryParams : {source:'MUM',destination:'GOA',startDate:'2022-02-27',endDate:'2022-02-27',noOfCars:2}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getcabsFlow" doc:id="1d30ace8-1e26-42b6-9a8e-be3e93614a8f" name="get:\cabs:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="3e8aeca4-5bb8-4cc5-8c5d-970a9f0779e7" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload."StatusCode" must contain("500")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getCabDetailsFlowTest" doc:id="51514568-999a-43b3-a0ed-69059a4b30fd" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="db319743-9597-4565-af3b-5ccd8cdc8710" >
+				<munit:attributes value="#[{
+&#10;
+&#10;uriParams : {cabs_id: 3}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getCabDetailsFlow" doc:id="b4feebee-4f7e-472c-9d81-bfdcfb50a049" name="get:\cabs\(cabs_id):bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="32b7ed7b-eeb6-4d8d-8df5-a92dcc568df3" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="72e73785-87b0-4d31-bc0c-3d03a187791f" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getCabDetailsFlowTest1" doc:id="d568ed2b-7ba3-4b55-9795-5a4e53b50f8c" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when validation:is-number" doc:id="1db68783-7dfb-43f1-b042-9c55fdf43aa1" processor="validation:is-number">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="363ad11c-23ff-4b12-a9ff-ed92ef1eaeb8" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="VALIDATION:INVALID_NUMBER" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="b7daf572-eb94-497f-b215-e0156238d5c6" >
+				<munit:attributes value="#[{
+&#10;
+&#10;uriParams : {cabs_id: 3}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getCabDetailsFlow" doc:id="bb6bef6f-72ec-4e21-b4b2-eb20bf72137b" name="get:\cabs\(cabs_id):bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="754072c5-53f1-48ab-8db4-8681d337926e" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload."StatusCode" must contain("400")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getCabDetailsFlowTest2" doc:id="8eb5a06f-c845-4785-9c95-115124b8c6d0" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when http Request" doc:id="2bd5f32d-b86c-4a8e-b7ce-41c395199b7c" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="1c4b1465-2bd4-4996-9a00-eb3fb4ddf23a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="139f088c-6fb4-4d5b-bf8c-eb44cba69535" >
+				<munit:attributes value="#[{
+&#10;
+&#10;uriParams : {cabs_id: 3}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getCabDetailsFlow" doc:id="a976e4e6-2279-421b-ab18-0b284ded4023" name="get:\cabs\(cabs_id):bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="a461814c-c614-4c6e-a234-d96edd3e671f" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload."StatusCode" must contain("500")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-addCabsFlowTest" doc:id="85c92833-0663-4e87-b42b-6a0ec171999a" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="e862b2f4-ce6f-46a7-afbb-03be56ea3110" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://test-inputs/addCab.json")]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to addCabsFlow" doc:id="dc0e26f3-7c90-4828-9fd7-22ac9612061b" name="post:\cabs:application\json:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="7a0d7fdb-03e2-47a7-99e0-8578f412620a" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="fe815159-809e-4066-93d9-4506cbbc45fd" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-cancelBookingFlowTest" doc:id="17de5743-402e-4d73-814d-1afc5616d4d7" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="db4dac48-e762-4c3d-b1fb-fed648e6751d" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="7a68eeb6-7de8-4e18-bee9-6cf1d7f2bc47" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='   
+&#10;#[output application/json --- 
+&#10;
+&#10;{
+&#10;    "bookingid": "CAB-0002",
+&#10;    "message": "Booking Cancelled Successfully"
+&#10;}
+&#10;
+&#10;]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="749c7492-dc5c-407c-a793-b331266aee01" >
+				<munit:payload value='#[output application/json --- 
+&#10;
+&#10;{
+&#10;  "bookingid" : "CAB-0002"
+&#10;}
+&#10;
+&#10;]' />
+				<munit:attributes value="#[{
+&#10;
+&#10;uriParams : {cabs_id: 3}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to cancelBookingFlow" doc:id="5a16ffcb-c3fe-4c9b-979a-64ffe928a8b1" name="put:\cabs\(cabs_id)\booking:application\json:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="932d5fff-edf4-47b3-827d-fa2510df5570" is="#[MunitTools::both(MunitTools::notNullValue(),MunitTools::withMediaType('application/json'))]" expression="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="d023c2a8-c997-4a6a-a2f6-5eb3c0a9b43a" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-cancelBookingFlowTest1" doc:id="9d276efe-d500-4f0f-b40e-7e204bb4d9a3" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c206bd40-69b2-4f5c-b6d9-3947ee46914f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="7a68eeb6-7de8-4e18-bee9-6cf1d7f2bc47" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="fb5791d0-f00f-47c9-8f22-ebfcf2acdff7" >
+				<munit:payload value='#[output application/json --- 
+&#10;
+&#10;{
+&#10;  "bookingid" : "CAB-0002"
+&#10;}
+&#10;
+&#10;]' />
+				<munit:attributes value="#[{
+&#10;
+&#10;uriParams : {cabs_id: 3}
+&#10;
+&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to cancelBookingFlow" doc:id="c95c7ac9-1993-4f20-9e07-0e0f1d4977d0" name="put:\cabs\(cabs_id)\booking:application\json:bookmyholiday-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="5637ccbb-56bd-4fb5-afe1-02b22cfeca43" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload."StatusCode" must contain("400")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getFlightsFlowTest-Validation" doc:id="4ce4a244-12dd-48f6-8889-c739b0821cc9" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when setInitialValues" doc:id="98b985a2-356f-4f42-8cd6-9dc8cd6bc99e" processor="flow-ref">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="ab83a4de-d34e-44f9-afa8-f5cd938c4b95" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="VALIDATION:BLANK_STRING" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="call setEvent" doc:id="8d5c481e-7606-4492-8086-c5465056277d" name="setEvent" />
+			<flow-ref doc:name="Flow-ref to getFlightsFlow" doc:id="3867f1d9-574d-4602-b16e-05219824838e" name="get:\flights:bookmyholiday-api-config" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert expression" doc:id="3ac5d683-9bd3-4359-926f-834b57296b8c">
+				<munit-tools:that><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload."Error Message" must contain("Invalid user input")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+</mule>

@@ -1,0 +1,27 @@
+%dw 2.0
+
+type auto_4daac565_0610_4a12_a126_6b31319b652b_Input_Payload = {
+  bookingtype: String, 
+  insurance?: Boolean, 
+  couponApplied: Boolean, 
+  lastName?: String, 
+  couponName?: String, 
+  isGuest?: Boolean, 
+  bedSize?: String, 
+  departure_date: String, 
+  origin?: String, 
+  destination: String, 
+  noOfPassengers: Number, 
+  userName: String, 
+  userid?: String, 
+  noOfDays?: Number, 
+  firstName: String, 
+  noOfCars?: Number, 
+  price?: Number, 
+  contactNumber: Number, 
+  noOfRooms?: Number, 
+  roomType?: String, 
+  return_date: String, 
+  _?: Any
+}
+

@@ -1,0 +1,29 @@
+%dw 2.0
+
+type auto_a83c47be_66db_4671_8197_4930b77670fb_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|
+    source: String, 
+    destination: String, 
+    startDate?: String, 
+    endDate?: String, 
+    noOfCars?: Number
+  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+

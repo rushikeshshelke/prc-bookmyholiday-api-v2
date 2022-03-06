@@ -1,0 +1,393 @@
+#%RAML 1.0 Library
+usage: this is booking data type library
+
+types:
+  bookingtypes: 
+    type: object
+    properties:
+      bookingtype: string
+      
+  stopLocation:
+    type: object
+    properties:
+      location: 
+        type: string
+        
+  stopLocationDetails:
+    type: object
+    properties:
+      id:
+      locationCode: 
+      location:
+      departure:
+      arrival:
+                
+  originLocation:
+    type: object
+    properties:
+      locationCode:
+        type: string
+        required: false
+      locationDescription:
+        type: string
+        required: false
+
+  destinationLocation:
+     type: object
+     properties:
+      locationCode:
+        type: string
+        required: false
+      locationDescription:
+        type: string
+        required: false 
+  
+  rules:
+    type: object
+    properties:
+      rule:
+        type: string
+        
+  images:
+    type: object
+    properties:
+      image:
+        type: string
+           
+  coupons:
+    type: object
+    properties:
+      code:
+      description:
+      rule:
+      
+  cancellation:
+    type: object
+    properties:
+      timeFrame:
+      charges:
+
+  reschedule:
+    type: object
+    properties:
+      timeFrame:
+      charges:   
+  price:
+    type: object
+    properties:
+      baseFare: 
+        type: number
+        default: 0
+      taxes:
+        type: number
+        default: 0
+      total:
+        type: number
+        default: 0
+      bookingtype:
+        type: string
+  roomtype:
+    type: object
+    properties:
+      roomType: string
+
+  booking:
+    properties:
+      name:
+      id:
+      number:
+      description:
+        type: string
+        required: false
+      propertyHightlights:
+        type: string
+        required: false
+      rating:
+        type: number
+        example: 0
+      bookingTypes:
+        type: bookingtypes[]
+        minItems: 1
+      startDate:
+        type: date-only
+      endDate:
+        type: date-only
+      startTime?:
+        type: time-only
+      endTime?:
+        type: time-only
+      noOfDays:
+        type: number
+        default: 0
+      layOver?:
+        type: number
+        default: 0
+      noOfStops?:
+        type: number
+        default: 0
+      stopLocations:
+        type: array
+        items: stopLocation[]
+        required: false
+      origin:
+        type: originLocation[]
+      destination:
+        type: destinationLocation[]
+      price:
+        type: price[]
+      currency:
+      baggage:
+        properties:
+          total:
+            type: number
+            default: 0
+          cabin?:
+            type: number
+            default: 0
+          checkin? :
+            type: number
+            default: 0
+          
+  bookingDetails:
+    properties:
+      name:
+      id:
+      number:
+      bookingtype:
+        type: bookingtypes[]
+        minItems: 1
+      rules?:
+        type: rules[]
+      images?:
+        type: images[]
+      startDate:
+        type: date-only
+      endDate:
+        type: date-only
+      startTime?:
+        type: time-only
+      endTime?:
+        type: time-only
+      layOver?:
+        type: number
+        default: 0
+      noOfStops?:
+        type: number
+        default: 0
+      stopLocation:
+        type: stopLocationDetails[] 
+        required: false
+      origin:
+        type: originLocation[]
+      destination:
+        type: destinationLocation[]
+      availability:
+        type: number
+      noOfDays:
+        type: number
+        default: 0
+      noOfRooms?:
+        type: number
+        default: 0
+      roomTypes?:
+        type: roomtype[]
+      bedSize?:
+        type : array
+      price:
+        type: price[]
+      currency:
+      availableCoupons:
+        type: coupons[]
+        required: false
+      baggage:
+        properties:
+          total:
+            type: number
+            default: 0
+          cabin?:
+            type: number
+            default: 0
+          checkin ?:
+            type: number
+            default: 0
+      cancellationPolicy:
+        type: cancellation[] 
+        required: false
+      reschedulePolicy:
+        type: reschedule[]
+        required: false
+  
+  submitBooking:
+    properties:
+      departure_date:
+        type: date-only
+      return_date:
+        type: date-only
+      origin?:
+      destination:
+      bookingtype:
+        type: string
+      roomType?:
+      bedSize?:
+      noOfPassengers:
+        type: number
+      noOfCars?:
+        type: number
+      noOfDays?:
+        type: number
+      noOfRooms?:
+        type: number
+      insurance:
+        type: boolean
+        default: false
+        required: false
+      couponApplied:
+        type: boolean
+        default: false
+      couponName?:
+      userName:
+      firstName:
+      lastName?:
+      userid:
+        type: string
+        required: false
+      isGuest?:
+        type: boolean
+        default: false
+      contactNumber:
+        type: number
+        maximum: 9999999999
+        minimum: 1000000001
+        required: true
+        example: 9876543210
+      price?:
+        type: number
+
+  changeBooking:
+    properties:
+      departure_date?:
+        type: date-only
+      return_date?:
+        type: date-only
+      origin?:
+      destination?:
+      bookingtype?:
+        type: string
+      noOfPassengers?:
+        type: number
+      noOfCars?:
+        type: number
+      noOfDays?:
+        type: number
+      insurance?:
+        type: boolean
+        default: false
+        required: false
+      roomType?:
+      bedSize?:
+      isGuest?:
+        type: boolean
+        default: false
+      cancel?:
+        type: boolean
+        default: false
+        required: false
+      reschedule?:
+        type: boolean
+        default: false
+        required: false
+      booking_number:
+
+  bookingResponse:
+    properties:
+      bookingid:
+      message:
+
+  addBooking:
+    properties:
+      name:
+      id?:
+      number:
+      description:
+        type: string
+        required: false
+      propertyHighlights:
+        type: string
+        required: false
+      rating:
+        type: number
+        example: 0
+      bookingtypes:
+        type: bookingtypes[]
+        minItems: 1
+      rules?:
+        type: rules[]
+      images?:
+        type: images[]
+      startDate:
+        type: date-only
+      endDate:
+        type: date-only
+      startTime?:
+        type: time-only
+      endTime?:
+        type: time-only
+      layOver?:
+        type: number
+        default: 0
+      noOfStops?:
+        type: number
+        default: 0
+      stopLocation?:
+        type: stopLocationDetails[] 
+        required: false
+      origin?:
+        type: originLocation[]
+      destination:
+        type: destinationLocation[]
+      availability:
+        type: number
+      noOfDays?:
+        type: number
+        default: 0
+      noOfRooms?:
+        type: number
+        default: 0
+      surgeMultiplier?:
+        type: number
+      availableSeats?:
+        type: number
+      roomTypes?:
+        type: roomtype[]
+      bedSize?:
+        type: array
+      price:
+        type: price[]
+      currency:
+      availableCoupons:
+        type: coupons[]
+        required: false
+      baggage:
+        properties:
+          total:
+            type: number
+            default: 0
+          cabin?:
+            type: number
+            required: false
+            default: 0
+          checkin ?:
+            type: number
+            required: false
+            default: 0
+      cancellationPolicy:
+        type: cancellation[] 
+        required: false
+      reschedulePolicy:
+        type: reschedule[]
+        required: false
+
+  addBookingResponse:
+    properties:
+      id:
+      message:

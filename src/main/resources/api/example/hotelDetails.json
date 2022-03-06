@@ -1,0 +1,124 @@
+{
+    "id": "1",
+    "name" : "Taj Hotel",
+    "number" : "Taj-123",
+    "bookingtype" : [
+        {
+          "bookingtype" : "Sea view Resort"
+        },
+        {
+          "bookingtype" : "Standard Resort"
+        }
+      ],
+    "rules":
+      [
+        {
+          "rule" : "meals included"
+        },
+        {
+          "rule" : "covid information"
+        }
+      ],
+    "images" : 
+      [
+        {
+          "image" : "image1.jpg"
+        },
+        {
+          "image" : "image2.jpg"
+        },
+        {
+          "image" : "image3.jpg"
+        }
+      ],
+    "startDate": "2022-02-23",
+    "endDate" : "2022-02-23",
+    "startTime" : "12:15:00",
+    "endTime" : "16:45:00",
+    "layOver" : 0,
+    "noOfStops" : 0,
+    "stopLocation":
+      [
+        
+      ],
+    "origin" :
+      [{
+        "locationCode" : "",
+        "locationDescription" : ""
+      }],
+    "destination" : 
+      [{
+        "locationCode" : "GOA",
+        "locationDescription" : "Goa"
+      }],
+    "availability" : 10,
+    "noOfDays" : 2,
+    "noOfRooms" : 2,
+    "roomTypes" : [{"roomType" : "AC"},{"roomType" : "NON-AC"}],
+    "bedSize" : ["King","QUEEN"],
+    "noOfAdults" : 4,
+    "noOfChildrens" : 1,
+    "price" : 
+      [{
+        "baseFare" : 4000,
+        "taxes" : 1000,
+        "total" : 5000,
+        "bookingtype" : "Sea View Resort"
+      },
+      {
+        "baseFare" : 4000,
+        "taxes" : 1000,
+        "total" : 5000,
+        "bookingtype" : "Garden View Resort"
+      }],
+    "currency" : "INR",
+    "availableCoupons":
+      [
+        {
+          "code" : "500OFF",
+          "description" : "Use this coupon to get Rupees 500 discount on purchase of 5000 and above.",
+          "rule" : "price > 5000"
+        },
+        {
+          "code" : "100OFF",
+          "description" : "Use this coupon to get Rupees 100 discount on purchase of 1000 and above.",
+          "rule" : "price > 1000"
+        }
+      ],
+    "baggage" : 
+      {
+        "total" : 0,
+        "cabin" : 0,
+        "checkin" : 0
+      },
+    "cancellationPolicy":
+      [
+        {
+          "timeFrame" : "0-2 Hours",
+          "charges" : "5000"
+        },
+        {
+          "timeFrame" : "2-72 Hours",
+          "charges" : "3000"
+        },
+        {
+          "timeFrame" : "more than 72 Hours",
+          "charges" : "500"
+        }
+      ],
+      "reschedulePolicy":
+      [
+        {
+          "timeFrame" : "0-2 Hours",
+          "charges" : "4000"
+        },
+        {
+          "timeFrame" : "2-72 Hours",
+          "charges" : "2000"
+        },
+        {
+          "timeFrame" : "more than 72 Hours",
+          "charges" : "200"
+        }
+      ]
+}

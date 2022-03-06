@@ -1,0 +1,22 @@
+http:
+  port1: '8083'
+  port2: '8081'
+  host: "localhost"
+
+flights:
+  host: "sys-flightsbooking-api-v2.us-e2.cloudhub.io"
+  port: "80"
+
+hotels:
+  url: "http://sys-bookmyholiday-hotels-api.us-e2.cloudhub.io/hotels/hotelsSOAP?wsdl"
+  service: "hotels"
+  port: "hotelsSOAP"
+  
+cabs:
+  host: "sys-bookmyholiday-cabs-api.us-e2.cloudhub.io"
+  port: "80"
+  basepath: "/api/"
+  
+amazons3:
+  bucket: "cabbooking"
+  bookingfileName: "LatestBooking.json"

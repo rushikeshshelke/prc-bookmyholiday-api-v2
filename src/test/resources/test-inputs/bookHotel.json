@@ -1,0 +1,21 @@
+{
+	"departure_date": "2022-02-24",
+	"return_date": "2022-02-25",
+	"origin": "",
+	"destination": "KOL",
+	"bookingtype": "FLEXI",
+	"noOfPassengers": 2,
+	"insurance": false,
+	"userName": "ABC",
+	"userid": "ABC_Account",
+	"isGuest": false,
+	"mobileNumber": 9876543210,
+	"couponName": "500OFF",
+    "noOfRooms": 1,
+    "noOfDays": 2,
+    "bedSize": "KING",
+    "hotelType": "Garden view Resort",
+    "roomType": "AC",
+    "fname": "Max",
+    "lname": "Mule"
+}

@@ -1,0 +1,159 @@
+#%RAML 1.0
+title: BookMyHoliday-API
+description: This is book my holiday API design for flights, hotels and car booking. We can search and book flights and hotels based on the availability provided.
+baseUri: https://api.bookmyholiday.com/api/
+version: v1
+mediaType: 
+  - application/json
+protocols:
+  - HTTPS
+  - HTTP
+
+uses:
+  bookingDataType: library/bookingDataType.raml
+  bookingResourceType: library/bookingResourceType.raml
+    
+/flights:
+  type:
+    bookingResourceType.bookingCollection:
+      getBookingExample: !include /example/flights.json
+      addBookingExample: !include /example/addBooking.json
+      postResponseExample: !include /example/addBookingResponse.json
+      getBookingType: bookingDataType.booking[]
+      addBookingType: bookingDataType.addBooking
+      postResponseType: bookingDataType.addBookingResponse
+
+  get:
+    queryParameters:
+      source:
+        type: string
+        example: CCU
+      destination:
+        type: string
+        example: BEN
+      startDate?:
+        type: date-only
+        example: "2022-02-23"
+      noOfPassengers?:
+        type: number
+        example: 2
+        default: 1
+        minimum: 1
+  post:
+
+  /{flight_id}:
+    type:
+      bookingResourceType.bookingDetailsCollection: 
+        getBookingDetailsExample: !include /example/flightDetails.json
+        getBookingDetailsType: bookingDataType.bookingDetails
+    get:
+    /booking:
+      type:
+        bookingResourceType.submitBookingCollection:
+          submitBookingExample: !include /example/booking.json
+          updateBookingExample: !include /example/bookingChange.json
+          completeBookingType: bookingDataType.bookingResponse
+          submitBookingType: bookingDataType.submitBooking
+          updateBookingType: bookingDataType.changeBooking
+          completeBookingResponseExample: !include /example/bookingConfirm.json
+      post:
+      put:
+
+
+/hotels:
+  type:
+    bookingResourceType.bookingCollection:
+      getBookingExample: !include /example/hotels.json
+      addBookingExample: !include /example/addBooking.json
+      postResponseExample: !include /example/addBookingResponse.json
+      getBookingType: bookingDataType.booking[]
+      addBookingType: bookingDataType.addBooking
+      postResponseType: bookingDataType.addBookingResponse
+
+  get:
+    queryParameters:
+      destination:
+        type: string
+        example: BEN
+      startDate?:
+        type: date-only
+        example: "2022-02-23"
+      endDate?:
+        type: date-only
+        example: "2022-02-25"
+      noOfRooms:
+        type: number
+        example: 2
+        default: 1
+        minimum: 1
+  post:
+  put:
+  /{hotels_id}:
+    type:
+      bookingResourceType.bookingDetailsCollection: 
+        getBookingDetailsExample: !include /example/hotelDetails.json
+        getBookingDetailsType: bookingDataType.bookingDetails
+    
+    get:
+    /booking:
+      type:
+        bookingResourceType.submitBookingCollection:
+          submitBookingExample: !include /example/hotelBooking.json
+          updateBookingExample: !include /example/bookingChange.json
+          completeBookingType: bookingDataType.bookingResponse
+          submitBookingType: bookingDataType.submitBooking
+          updateBookingType: bookingDataType.changeBooking
+          completeBookingResponseExample: !include /example/bookingConfirm.json
+      post:
+      put:
+
+/cabs:
+  type:
+    bookingResourceType.bookingCollection:
+      getBookingExample: !include /example/cabs.json
+      addBookingExample: !include /example/addBooking.json
+      postResponseExample: !include /example/addBookingResponse.json
+      getBookingType: bookingDataType.booking[]
+      addBookingType: bookingDataType.addBooking
+      postResponseType: bookingDataType.addBookingResponse
+
+  get:
+    queryParameters:
+      source:
+        type: string
+        example: CCU
+      destination:
+        type: string
+        example: BEN
+      startDate?:
+        type: date-only
+        example: "2022-02-23"
+      endDate?:
+        type: date-only
+        example: "2022-02-25"
+      noOfCars?:
+        type: number
+        example: 2
+        default: 1
+        minimum: 1
+  post:
+  put:
+  /{cabs_id}:
+    type:
+      bookingResourceType.bookingDetailsCollection: 
+        getBookingDetailsExample: !include /example/cabDetails.json
+        getBookingDetailsType: bookingDataType.bookingDetails
+        
+    
+    get:
+    /booking:
+      type:
+        bookingResourceType.submitBookingCollection:
+          submitBookingExample: !include /example/carBooking.json
+          updateBookingExample: !include /example/bookingChange.json
+          completeBookingType: bookingDataType.bookingResponse
+          submitBookingType: bookingDataType.submitBooking
+          updateBookingType: bookingDataType.changeBooking
+          completeBookingResponseExample: !include /example/bookingConfirm.json
+      post:
+      put:       
