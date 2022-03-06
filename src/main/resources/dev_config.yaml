@@ -1,10 +1,9 @@
 http:
-  port1: '8083'
-  port2: '8081'
+  port: '8081'
   host: "localhost"
 
 flights:
-  host: "sys-flightsbooking-api-v2.us-e2.cloudhub.io"
+  host: "sys-flightsbooking-api-v3.us-e2.cloudhub.io"
   port: "80"
 
 hotels:
